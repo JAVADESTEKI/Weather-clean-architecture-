@@ -1,0 +1,63 @@
+// presentation/viewmodel/CityViewModel.kt
+package ir.example1.weather.presentation.viewmodel
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import ir.example1.weather.domain.model.City
+import ir.example1.weather.domain.usecase.SearchCitiesUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class CityViewModel @Inject constructor(
+    private val searchCitiesUseCase: SearchCitiesUseCase
+) : ViewModel() {
+
+    private val _cities = MutableStateFlow<List<City>>(emptyList())
+    val cities: StateFlow<List<City>> = _cities.asStateFlow()
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading.asStateFlow()
+
+    private val _error = MutableStateFlow<String?>(null)
+    val error: StateFlow<String?> = _error.asStateFlow()
+
+    private var searchJob: Job? = null
+
+    fun searchCities(query: String) {
+        searchJob?.cancel()
+
+        if (query.length < 2) {
+            _cities.value = emptyList()
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            _loading.value = true
+            _error.value = null
+
+            delay(300)
+
+            searchCitiesUseCase(query).fold(
+                onSuccess = { citiesList ->
+                    _cities.value = citiesList
+                },
+                onFailure = { throwable ->
+                    _cities.value = emptyList()
+                }
+            )
+
+            _loading.value = false
+        }
+    }
+
+    fun clearError() {
+        _error.value = null
+    }
+}
