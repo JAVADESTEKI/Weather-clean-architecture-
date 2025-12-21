@@ -67,7 +67,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-
+    ksp("androidx.room:room-compiler:2.8.3")
 
     implementation(libs.coroutines.android)
 
