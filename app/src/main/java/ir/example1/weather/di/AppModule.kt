@@ -26,6 +26,7 @@ object AppModule {
     @Singleton
     fun provideApiKey(): String = BuildConfig.WEATHER_API_KEY
 
+
     @Provides
     @Singleton
     fun provideWeatherRepository(

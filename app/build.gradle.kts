@@ -71,10 +71,9 @@ dependencies {
 
     implementation(libs.coroutines.android)
 
-    val hiltVersion = "2.51"
-    implementation("com.google.dagger:hilt-android:$hiltVersion")
-    ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
-    ksp("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    ksp(libs.hilt.compiler)
 
 }
 
