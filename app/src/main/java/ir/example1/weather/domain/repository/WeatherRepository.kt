@@ -7,7 +7,7 @@ import ir.example1.weather.domain.model.Weather
 import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
-    suspend fun getCurrentWeather(lat: Double, lon: Double, unit: String): Result<Weather>
+    suspend fun getCurrentWeather(lat: Double, lon: Double, name: String, unit: String): Result<Weather>
     suspend fun getForecast(lat: Double, lon: Double, unit: String): Result<List<Forecast>>
     suspend fun searchCities(query: String, limit: Int): Result<List<City>>
 

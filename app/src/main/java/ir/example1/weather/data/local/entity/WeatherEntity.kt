@@ -1,9 +1,12 @@
-// domain/model/Weather.kt
-package ir.example1.weather.domain.model
+package ir.example1.weather.data.local.entity
 
-data class Weather(
-    val id: Int,
-    var cityName: String,
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "weather")
+data class WeatherEntity(
+    @PrimaryKey val id: Int,
+    val cityName: String,
     val temperature: Double,
     val feelsLike: Double,
     val minTemp: Double,
@@ -21,11 +24,7 @@ data class Weather(
     val sunrise: Long?,
     val sunset: Long?,
     val country: String,
-    val coord: Coord,
+    val lat: Double,
+    val lon: Double,
     val timestamp: Long
-) {
-    data class Coord(
-        val lat: Double,
-        val lon: Double
-    )
-}
+)

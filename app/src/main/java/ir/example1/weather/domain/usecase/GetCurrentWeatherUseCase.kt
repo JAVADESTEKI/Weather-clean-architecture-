@@ -11,8 +11,9 @@ class GetCurrentWeatherUseCase @Inject constructor(
     suspend operator fun invoke(
         lat: Double,
         lon: Double,
+        name: String,
         unit: String = "metric"
     ): Result<Weather> {
-        return repository.getCurrentWeather(lat, lon, unit)
+        return repository.getCurrentWeather(lat, lon, name, unit)
     }
 }

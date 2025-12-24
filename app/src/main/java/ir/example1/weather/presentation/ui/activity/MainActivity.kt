@@ -110,12 +110,13 @@ class MainActivity : AppCompatActivity() {
         val lon = intent.getDoubleExtra("lon", -0.12)
         val name = intent.getStringExtra("name") ?: "London"
 
-        binding.txtCity.text = name
-        viewModel.loadWeatherData(lat, lon)
+//      we send name to save to database, because api can't find correctly city name with lat and lon
+        viewModel.loadWeatherData(lat, lon, name)
     }
 
     private fun updateCurrentWeatherUI(weather: ir.example1.weather.domain.model.Weather) {
         binding.apply {
+            txtCity.text = weather.cityName
             txtStatus.text = weather.condition
             txtWindNum.text = "${weather.windSpeed.toInt()} Km/h"
             txtHumidityNum.text = "${weather.humidity}%"

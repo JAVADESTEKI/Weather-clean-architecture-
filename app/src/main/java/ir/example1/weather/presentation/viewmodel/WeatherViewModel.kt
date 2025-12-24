@@ -32,12 +32,12 @@ class WeatherViewModel @Inject constructor(
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
 
-    fun loadWeatherData(lat: Double, lon: Double) {
+    fun loadWeatherData(lat: Double, lon: Double, name: String) {
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
 
-            getCurrentWeatherUseCase(lat, lon).fold(
+            getCurrentWeatherUseCase(lat, lon, name).fold(
                 onSuccess = { weather ->
                     _currentWeather.value = weather
                 },
