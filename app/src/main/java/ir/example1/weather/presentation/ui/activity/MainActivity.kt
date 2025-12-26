@@ -1,4 +1,3 @@
-// presentation/ui/activity/MainActivity.kt
 package ir.example1.weather.presentation.ui.activity
 
 import android.content.Intent
@@ -37,7 +36,7 @@ class MainActivity : AppCompatActivity() {
         setupRecyclerView()
         setupObservers()
         setupClickListeners()
-        loadWeatherData()
+        decideInitialLoad()
     }
 
     private fun setupWindow() {
@@ -67,9 +66,7 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.forecast.collectLatest { forecastList ->
-                forecastList.let{
-                    updateForecastUI(it)
-                }
+                updateForecastUI(forecastList)
             }
         }
 
@@ -89,29 +86,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun updateForecastUI(forecast: List<ir.example1.weather.domain.model.Forecast>) {
-        forecast.let { forecastList ->
-            forecastAdapter.submitList(forecastList)
-        }
-    }
-
     private fun setupClickListeners() {
         binding.addCity.setOnClickListener {
             startActivity(Intent(this, CityListActivity::class.java))
         }
 
         binding.refreshCurrunt.setOnClickListener {
-            loadWeatherData()
+            val cw = viewModel.currentWeather.value
+            if (cw != null) {
+                viewModel.loadWeatherData(
+                    lat = cw.coord.lat,
+                    lon = cw.coord.lon,
+                    name = cw.cityName,
+                    forceRefresh = true
+                )
+            } else {
+                // اگر کش خالی است یا هنوز چیزی لود نشده، از آخرین شهر ذخیره‌شده شروع کن
+                viewModel.loadInitialWeather()
+            }
         }
     }
 
-    private fun loadWeatherData() {
-        val lat = intent.getDoubleExtra("lat", 51.50)
-        val lon = intent.getDoubleExtra("lon", -0.12)
-        val name = intent.getStringExtra("name") ?: "London"
+    // تصمیم‌گیری برای لود اولیه: اگر از CityList آمدیم فورس رفرش، در غیر این‌صورت از کشِ آخرین شهر
+    private fun decideInitialLoad() {
+        val hasExtras = intent.hasExtra("lat") && intent.hasExtra("lon") && intent.hasExtra("name")
+        if (hasExtras) {
+            val lat = intent.getDoubleExtra("lat", 51.50)
+            val lon = intent.getDoubleExtra("lon", -0.12)
+            val name = intent.getStringExtra("name") ?: "London"
+            viewModel.loadWeatherData(lat, lon, name, forceRefresh = true)
+        } else {
+            viewModel.loadInitialWeather()
+        }
+    }
 
-//      we send name to save to database, because api can't find correctly city name with lat and lon
-        viewModel.loadWeatherData(lat, lon, name)
+    private fun updateForecastUI(forecast: List<ir.example1.weather.domain.model.Forecast>) {
+        forecastAdapter.submitList(forecast)
     }
 
     private fun updateCurrentWeatherUI(weather: ir.example1.weather.domain.model.Weather) {
@@ -173,8 +183,4 @@ class MainActivity : AppCompatActivity() {
                 .into(imgDescription)
         }
     }
-
-
-
-
 }

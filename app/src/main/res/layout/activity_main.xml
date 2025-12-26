@@ -61,13 +61,13 @@
 
 
     <androidx.cardview.widget.CardView
-        android:layout_width="30dp"
+        android:layout_width="33dp"
         android:layout_height="35dp"
+        android:layout_marginRight="10dp"
         android:backgroundTint="#FFFFFF"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="16dp"
         app:cardElevation="100dp"
-        android:layout_marginRight="10dp"
         app:layout_constraintBottom_toTopOf="@+id/gdAMainH16"
         app:layout_constraintEnd_toStartOf="@+id/txtCity"
         app:layout_constraintRight_toLeftOf="@+id/txtCity"

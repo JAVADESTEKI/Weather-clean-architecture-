@@ -1,4 +1,3 @@
-// domain/usecase/GetForecastUseCase.kt
 package ir.example1.weather.domain.usecase
 
 import ir.example1.weather.domain.model.Forecast
@@ -11,8 +10,9 @@ class GetForecastUseCase @Inject constructor(
     suspend operator fun invoke(
         lat: Double,
         lon: Double,
-        unit: String = "metric"
+        unit: String = "metric",
+        forceRefresh: Boolean = false
     ): Result<List<Forecast>> {
-        return repository.getForecast(lat, lon, unit)
+        return repository.getForecast(lat, lon, unit, forceRefresh)
     }
 }

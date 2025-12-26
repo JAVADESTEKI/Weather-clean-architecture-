@@ -1,4 +1,3 @@
-// domain/usecase/GetCurrentWeatherUseCase.kt
 package ir.example1.weather.domain.usecase
 
 import ir.example1.weather.domain.model.Weather
@@ -12,8 +11,9 @@ class GetCurrentWeatherUseCase @Inject constructor(
         lat: Double,
         lon: Double,
         name: String,
-        unit: String = "metric"
+        unit: String = "metric",
+        forceRefresh: Boolean = false
     ): Result<Weather> {
-        return repository.getCurrentWeather(lat, lon, name, unit)
+        return repository.getCurrentWeather(lat, lon, name, unit, forceRefresh)
     }
 }

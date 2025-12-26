@@ -1,4 +1,3 @@
-// presentation/viewmodel/CityViewModel.kt
 package ir.example1.weather.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
@@ -6,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.usecase.SearchCitiesUseCase
+import ir.example1.weather.domain.usecase.SaveSelectedCityUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CityViewModel @Inject constructor(
-    private val searchCitiesUseCase: SearchCitiesUseCase
+    private val searchCitiesUseCase: SearchCitiesUseCase,
+    private val saveSelectedCityUseCase: SaveSelectedCityUseCase
 ) : ViewModel() {
 
     private val _cities = MutableStateFlow<List<City>>(emptyList())
@@ -32,28 +33,25 @@ class CityViewModel @Inject constructor(
 
     fun searchCities(query: String) {
         searchJob?.cancel()
-
         if (query.length < 2) {
             _cities.value = emptyList()
             return
         }
-
         searchJob = viewModelScope.launch {
             _loading.value = true
             _error.value = null
-
             delay(300)
-
             searchCitiesUseCase(query).fold(
-                onSuccess = { citiesList ->
-                    _cities.value = citiesList
-                },
-                onFailure = { throwable ->
-                    _cities.value = emptyList()
-                }
+                onSuccess = { _cities.value = it },
+                onFailure = { _cities.value = emptyList() }
             )
-
             _loading.value = false
+        }
+    }
+
+    fun saveSelectedCity(city: City) {
+        viewModelScope.launch {
+            saveSelectedCityUseCase(city)
         }
     }
 

@@ -1,4 +1,4 @@
-// presentation/ui/activity/CityListActivity.kt
+
 package ir.example1.weather.presentation.ui.activity
 
 import android.content.Intent
@@ -83,7 +83,6 @@ class CityListActivity : AppCompatActivity() {
     private fun setupSearch() {
         binding.edtCityAdd.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
             override fun afterTextChanged(s: Editable?) {
@@ -94,12 +93,18 @@ class CityListActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity(city: ir.example1.weather.domain.model.City) {
-        val intent = Intent(this, MainActivity::class.java).apply {
-            putExtra("lat", city.lat)
-            putExtra("lon", city.lon)
-            putExtra("name", city.name)
+        lifecycleScope.launch {
+            // ذخیره شهر انتخاب‌شده به‌عنوان آخرین شهر
+            viewModel.saveSelectedCity(city)
+
+            // سپس رفتن به صفحه اصلی با پارامترهای شهر
+            val intent = Intent(this@CityListActivity, MainActivity::class.java).apply {
+                putExtra("lat", city.lat)
+                putExtra("lon", city.lon)
+                putExtra("name", city.name)
+            }
+            startActivity(intent)
+            finish()
         }
-        startActivity(intent)
-        finish()
     }
 }

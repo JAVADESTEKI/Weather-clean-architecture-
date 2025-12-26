@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import ir.example1.weather.BuildConfig
 import ir.example1.weather.data.local.dao.ForecastDao
 import ir.example1.weather.data.local.dao.WeatherDao
+import ir.example1.weather.data.local.dao.CityDao
 import ir.example1.weather.data.local.database.WeatherDatabase
 import ir.example1.weather.data.remote.api.ApiClient
 import ir.example1.weather.data.remote.api.ApiServices
@@ -23,46 +24,32 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    // ---------- API ----------
-    @Provides
-    @Singleton
-    fun provideApiServices(apiClient: ApiClient): ApiServices =
-        apiClient.apiServices
+    @Provides @Singleton
+    fun provideApiServices(apiClient: ApiClient): ApiServices = apiClient.apiServices
 
-    @Provides
-    @Singleton
-    fun provideApiKey(): String =
-        BuildConfig.WEATHER_API_KEY
+    @Provides @Singleton
+    fun provideApiKey(): String = BuildConfig.WEATHER_API_KEY
 
-    // ---------- ROOM ----------
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideDatabase(app: Application): WeatherDatabase {
-        return Room.databaseBuilder(
-            app,
-            WeatherDatabase::class.java,
-            "weather_db"
-        ).build()
+        return Room.databaseBuilder(app, WeatherDatabase::class.java, "weather_db")
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
-    @Provides
-    fun provideWeatherDao(db: WeatherDatabase): WeatherDao =
-        db.weatherDao()
+    @Provides fun provideWeatherDao(db: WeatherDatabase): WeatherDao = db.weatherDao()
+    @Provides fun provideForecastDao(db: WeatherDatabase): ForecastDao = db.forecastDao()
+    @Provides fun provideCityDao(db: WeatherDatabase): CityDao = db.cityDao()
 
-    @Provides
-    fun provideForecastDao(db: WeatherDatabase): ForecastDao =
-        db.forecastDao()
-
-    // ---------- REPOSITORY ----------
-    @Provides
-    @Singleton
+    @Provides @Singleton
     fun provideWeatherRepository(
         apiService: ApiServices,
         weatherMapper: WeatherMapper,
         forecastMapper: ForecastMapper,
         cityMapper: CityMapper,
-        weatherDao: WeatherDao,       // ✅ اضافه شد
-        forecastDao: ForecastDao,     // ✅ اضافه شد
+        weatherDao: WeatherDao,
+        forecastDao: ForecastDao,
+        cityDao: CityDao,
         apiKey: String
     ): WeatherRepository {
         return WeatherRepositoryImpl(
@@ -70,8 +57,9 @@ object AppModule {
             weatherMapper = weatherMapper,
             forecastMapper = forecastMapper,
             cityMapper = cityMapper,
-            weatherDao = weatherDao,           // ✅
-            forecastDao = forecastDao,         // ✅
+            weatherDao = weatherDao,
+            forecastDao = forecastDao,
+            cityDao = cityDao,
             apiKey = apiKey
         )
     }
