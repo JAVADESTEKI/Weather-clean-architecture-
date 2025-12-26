@@ -8,7 +8,6 @@ import ir.example1.weather.data.local.entity.CityEntity
 
 @Dao
 interface CityDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdate(city: CityEntity)
 

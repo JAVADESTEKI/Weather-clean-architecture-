@@ -148,4 +148,14 @@ class WeatherRepositoryImpl @Inject constructor(
     override suspend fun cacheWeather(weather: Weather) {
         weatherDao.insertWeather(weather.toEntity())
     }
+    override suspend fun getAllSavedCities(): List<City> {
+        return cityDao.getAll().map { City(it.name, it.country, it.lat, it.lon) }
+    }
+
+    override suspend fun deleteSavedCity(city: City) {
+        cityDao.deleteByLatLon(city.lat, city.lon)
+        // اگر شهر حذف‌شده همان آخرین شهر انتخابی بود، می‌توانی اینجا تصمیم بگیری
+        // کش را پاک نکنی. ما کاری نمی‌کنیم تا رفتار ساده بماند.
+    }
+
 }

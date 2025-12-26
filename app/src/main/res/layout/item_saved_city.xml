@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#1B1E48">
+
+    <TextView
+        android:id="@+id/txtCityName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="City"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/txtCountry"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Country"
+        android:textColor="#A9A5A5"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/txtCityName"
+        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
+        app:layout_constraintTop_toBottomOf="@+id/txtCityName" />
+
+    <ImageView
+        android:id="@+id/btnDelete"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="#FF5252"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

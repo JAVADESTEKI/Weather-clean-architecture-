@@ -20,12 +20,21 @@ import ir.example1.weather.presentation.viewmodel.WeatherViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+import android.view.LayoutInflater
+import android.widget.PopupWindow
+import ir.example1.weather.presentation.ui.adapter.SavedCitiesAdapter
+
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: WeatherViewModel by viewModels()
     private val forecastAdapter = ForecastAdapter()
+
+    private var savedCitiesPopup: PopupWindow? = null
+    private lateinit var savedAdapter: SavedCitiesAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +46,69 @@ class MainActivity : AppCompatActivity() {
         setupObservers()
         setupClickListeners()
         decideInitialLoad()
+        setupSavedCitiesPopup()
+    }
+    private fun setupSavedCitiesPopup() {
+        savedAdapter = SavedCitiesAdapter(
+            onSelect = { city ->
+                viewModel.selectSavedCity(city)
+                dismissSavedCitiesPopup()
+            },
+            onDelete = { city ->
+                viewModel.deleteSavedCity(city)
+            }
+        )
+
+        // Observe saved cities to update popup list
+        lifecycleScope.launch {
+            viewModel.savedCities.collectLatest { list ->
+                if (::savedAdapter.isInitialized) {
+                    savedAdapter.submitList(list)
+                }
+            }
+        }
+
+        // Load on start so first open has data
+        viewModel.loadSavedCities()
+
+        // Click on moreCity -> show popup
+        binding.moreCity.setOnClickListener {
+            toggleSavedCitiesPopup()
+        }
+    }
+
+    private fun toggleSavedCitiesPopup() {
+        if (savedCitiesPopup?.isShowing == true) {
+            dismissSavedCitiesPopup()
+            return
+        }
+
+        viewModel.loadSavedCities()
+
+        val inflater = LayoutInflater.from(this)
+        val contentView = inflater.inflate(R.layout.popup_saved_cities, null)
+        val rv = contentView.findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvSavedCities)
+        rv.layoutManager = LinearLayoutManager(this)
+        rv.adapter = savedAdapter
+
+        savedCitiesPopup = PopupWindow(
+            contentView,
+            resources.getDimensionPixelSize(R.dimen.saved_cities_popup_width),
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            true
+        ).apply {
+            isOutsideTouchable = true
+            elevation = 16f
+            // نمایش دقیقا زیر moreCity
+            val anchor = binding.moreCity
+            // کمی offset عمودی برای فاصله
+            showAsDropDown(anchor, 0, 10)
+        }
+    }
+
+    private fun dismissSavedCitiesPopup() {
+        savedCitiesPopup?.dismiss()
+        savedCitiesPopup = null
     }
 
     private fun setupWindow() {
