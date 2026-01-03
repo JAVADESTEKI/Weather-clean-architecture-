@@ -3,10 +3,7 @@ package ir.example1.weather.data.repository
 
 import androidx.room.Transaction
 import ir.example1.weather.data.local.dao.CityDao
-import ir.example1.weather.data.local.dto.CityFullData
-import ir.example1.weather.data.local.entity.CityEntity
-import ir.example1.weather.data.local.entity.ForecastEntity
-import ir.example1.weather.data.local.entity.WeatherEntity
+import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.data.mapper.toDomain
 import ir.example1.weather.data.mapper.toEntity
 import ir.example1.weather.data.remote.api.ApiServices
@@ -18,8 +15,6 @@ import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast
 import ir.example1.weather.domain.model.Weather
 import ir.example1.weather.domain.repository.WeatherRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 

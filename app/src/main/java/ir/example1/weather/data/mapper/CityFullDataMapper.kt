@@ -1,6 +1,6 @@
 package ir.example1.weather.data.mapper
 
-import ir.example1.weather.data.local.dto.CityFullData
+import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast

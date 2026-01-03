@@ -1,14 +1,10 @@
 package ir.example1.weather.domain.repository
 
-import ir.example1.weather.data.local.dto.CityFullData
-import ir.example1.weather.data.local.entity.CityEntity
-import ir.example1.weather.data.local.entity.ForecastEntity
-import ir.example1.weather.data.local.entity.WeatherEntity
+import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast
 import ir.example1.weather.domain.model.Weather
-import kotlinx.coroutines.flow.Flow
 
 interface WeatherRepository {
 

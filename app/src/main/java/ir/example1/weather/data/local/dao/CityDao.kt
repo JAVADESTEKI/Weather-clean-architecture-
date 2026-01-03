@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import ir.example1.weather.data.local.dto.CityFullData
+import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.data.local.entity.CityEntity
 import ir.example1.weather.data.local.entity.ForecastEntity
 import ir.example1.weather.data.local.entity.WeatherEntity

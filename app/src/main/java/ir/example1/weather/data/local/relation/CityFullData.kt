@@ -1,4 +1,4 @@
-package ir.example1.weather.data.local.dto
+package ir.example1.weather.data.local.relation
 
 import androidx.room.Embedded
 import androidx.room.Relation
