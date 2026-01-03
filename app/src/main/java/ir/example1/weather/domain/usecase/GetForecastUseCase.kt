@@ -13,6 +13,6 @@ class GetForecastUseCase @Inject constructor(
         unit: String = "metric",
         forceRefresh: Boolean = false
     ): Result<List<Forecast>> {
-        return repository.getForecast(lat, lon, unit, forceRefresh)
+        return repository.getForecastWea(lat, lon,unit )
     }
 }

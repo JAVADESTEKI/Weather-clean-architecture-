@@ -1,11 +1,26 @@
 package ir.example1.weather.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "weather")
+@Entity(
+    tableName = "weather",
+    foreignKeys = [
+        ForeignKey(
+            entity = CityEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["cityId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    primaryKeys = ["cityId", "timestamp"]
+)
+
+
 data class WeatherEntity(
-    @PrimaryKey val id: Int,
+    val cityId: Long,
     val cityName: String,
     val temperature: Double,
     val feelsLike: Double,

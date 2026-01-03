@@ -10,7 +10,7 @@ import androidx.room.Index
     indices = [Index(value = ["lat", "lon"], unique = true)]
 )
 data class CityEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
     val name: String,
     val country: String,
     val lat: Double,

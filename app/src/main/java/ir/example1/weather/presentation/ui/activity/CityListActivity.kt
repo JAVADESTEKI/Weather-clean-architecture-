@@ -99,9 +99,7 @@ class CityListActivity : AppCompatActivity() {
 
             // سپس رفتن به صفحه اصلی با پارامترهای شهر
             val intent = Intent(this@CityListActivity, MainActivity::class.java).apply {
-                putExtra("lat", city.lat)
-                putExtra("lon", city.lon)
-                putExtra("name", city.name)
+                putExtra("isSaved", "1")
             }
             startActivity(intent)
             finish()

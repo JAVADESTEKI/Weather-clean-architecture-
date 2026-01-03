@@ -2,7 +2,6 @@
 package ir.example1.weather.domain.model
 
 data class Weather(
-    val id: Int,
     var cityName: String,
     val temperature: Double,
     val feelsLike: Double,
@@ -21,11 +20,7 @@ data class Weather(
     val sunrise: Long?,
     val sunset: Long?,
     val country: String,
-    val coord: Coord,
+    val lat: Double,
+    val lon: Double,
     val timestamp: Long
-) {
-    data class Coord(
-        val lat: Double,
-        val lon: Double
-    )
-}
+)

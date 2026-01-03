@@ -10,7 +10,7 @@ class ForecastMapper @Inject constructor() {
         return response.list?.mapNotNull { item ->
             item?.let {
                 Forecast(
-                    id = it.dt ?: 0,
+                    cityId = 0,
                     dateTime = (it.dt ?: 0).toLong() * 1000,
                     dateText = it.dtTxt ?: "",
                     temperature = it.main?.temp ?: 0.0,

@@ -5,7 +5,7 @@ import ir.example1.weather.domain.model.Weather
 
 fun Weather.toEntity(): WeatherEntity {
     return WeatherEntity(
-        id = id,
+        cityId = 0,
         cityName = cityName,
         temperature = temperature,
         feelsLike = feelsLike,
@@ -24,15 +24,14 @@ fun Weather.toEntity(): WeatherEntity {
         sunrise = sunrise,
         sunset = sunset,
         country = country,
-        lat = coord.lat,
-        lon = coord.lon,
+        lat = lat,
+        lon = lon,
         timestamp = timestamp
     )
 }
 
 fun WeatherEntity.toDomain(): Weather {
     return Weather(
-        id = id,
         cityName = cityName,
         temperature = temperature,
         feelsLike = feelsLike,
@@ -51,7 +50,8 @@ fun WeatherEntity.toDomain(): Weather {
         sunrise = sunrise,
         sunset = sunset,
         country = country,
-        coord = Weather.Coord(lat, lon),
+        lat = lat,
+        lon = lon,
         timestamp = timestamp
     )
 }

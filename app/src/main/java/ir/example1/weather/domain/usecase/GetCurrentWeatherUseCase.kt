@@ -12,8 +12,8 @@ class GetCurrentWeatherUseCase @Inject constructor(
         lon: Double,
         name: String,
         unit: String = "metric",
-        forceRefresh: Boolean = false
+
     ): Result<Weather> {
-        return repository.getCurrentWeather(lat, lon, name, unit, forceRefresh)
+        return repository.getCurrentWea(lat, lon, name,unit )
     }
 }

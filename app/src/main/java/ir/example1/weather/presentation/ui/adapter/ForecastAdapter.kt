@@ -66,7 +66,7 @@ class ForecastAdapter : ListAdapter<Forecast, ForecastAdapter.ViewHolder>(Foreca
 
 class ForecastDiffCallback : DiffUtil.ItemCallback<Forecast>() {
     override fun areItemsTheSame(oldItem: Forecast, newItem: Forecast): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.cityId== newItem.cityId
     }
 
     override fun areContentsTheSame(oldItem: Forecast, newItem: Forecast): Boolean {

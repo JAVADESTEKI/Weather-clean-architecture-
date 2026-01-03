@@ -14,6 +14,7 @@ import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ir.example1.weather.R
 import ir.example1.weather.databinding.ActivityMainBinding
+
 import ir.example1.weather.presentation.ui.adapter.ForecastAdapter
 import ir.example1.weather.presentation.ui.utils.WeatherIconMapper
 import ir.example1.weather.presentation.viewmodel.WeatherViewModel
@@ -92,30 +93,23 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.refreshCurrunt.setOnClickListener {
-            val cw = viewModel.currentWeather.value
-            if (cw != null) {
-                viewModel.loadWeatherData(
-                    lat = cw.coord.lat,
-                    lon = cw.coord.lon,
-                    name = cw.cityName,
-                    forceRefresh = true
-                )
-            } else {
-                // اگر کش خالی است یا هنوز چیزی لود نشده، از آخرین شهر ذخیره‌شده شروع کن
-                viewModel.loadInitialWeather()
-            }
+            viewModel.refreshWeather()
         }
     }
 
     // تصمیم‌گیری برای لود اولیه: اگر از CityList آمدیم فورس رفرش، در غیر این‌صورت از کشِ آخرین شهر
     private fun decideInitialLoad() {
-        val hasExtras = intent.hasExtra("lat") && intent.hasExtra("lon") && intent.hasExtra("name")
+        val hasExtras = intent.hasExtra("isSaved")
         if (hasExtras) {
-            val lat = intent.getDoubleExtra("lat", 51.50)
-            val lon = intent.getDoubleExtra("lon", -0.12)
-            val name = intent.getStringExtra("name") ?: "London"
-            viewModel.loadWeatherData(lat, lon, name, forceRefresh = true)
-        } else {
+
+            // cityFullData
+//            viewModel.loadWeatherData(cityfull data)
+//            val city= City(name, country,lat,lon,0,localName)
+//            viewModel.saveSelectedCity(city)
+            viewModel.loadInitialWeather()
+
+        }
+        else {
             viewModel.loadInitialWeather()
         }
     }
@@ -125,6 +119,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentWeatherUI(weather: ir.example1.weather.domain.model.Weather) {
+
         binding.apply {
             txtCity.text = weather.cityName
             txtStatus.text = weather.condition
@@ -133,6 +128,7 @@ class MainActivity : AppCompatActivity() {
             txtTodayDegree.text = "${weather.temperature.toInt()}°"
             txtMaxDegree.text = "H: ${weather.maxTemp.toInt()}°"
             txtMinDegree.text = "L: ${weather.minTemp.toInt()}°"
+
 
             Glide.with(root.context)
                 .load(WeatherIconMapper.getIconResource(weather.icon))

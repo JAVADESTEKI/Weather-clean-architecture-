@@ -7,8 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import ir.example1.weather.BuildConfig
-import ir.example1.weather.data.local.dao.ForecastDao
-import ir.example1.weather.data.local.dao.WeatherDao
+
 import ir.example1.weather.data.local.dao.CityDao
 import ir.example1.weather.data.local.database.WeatherDatabase
 import ir.example1.weather.data.remote.api.ApiClient
@@ -37,8 +36,8 @@ object AppModule {
             .build()
     }
 
-    @Provides fun provideWeatherDao(db: WeatherDatabase): WeatherDao = db.weatherDao()
-    @Provides fun provideForecastDao(db: WeatherDatabase): ForecastDao = db.forecastDao()
+//    @Provides fun provideWeatherDao(db: WeatherDatabase): WeatherDao = db.weatherDao()
+//    @Provides fun provideForecastDao(db: WeatherDatabase): ForecastDao = db.forecastDao()
     @Provides fun provideCityDao(db: WeatherDatabase): CityDao = db.cityDao()
 
     @Provides @Singleton
@@ -47,8 +46,6 @@ object AppModule {
         weatherMapper: WeatherMapper,
         forecastMapper: ForecastMapper,
         cityMapper: CityMapper,
-        weatherDao: WeatherDao,
-        forecastDao: ForecastDao,
         cityDao: CityDao,
         apiKey: String
     ): WeatherRepository {
@@ -57,8 +54,6 @@ object AppModule {
             weatherMapper = weatherMapper,
             forecastMapper = forecastMapper,
             cityMapper = cityMapper,
-            weatherDao = weatherDao,
-            forecastDao = forecastDao,
             cityDao = cityDao,
             apiKey = apiKey
         )

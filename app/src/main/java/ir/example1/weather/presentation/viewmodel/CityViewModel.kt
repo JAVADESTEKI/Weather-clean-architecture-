@@ -4,8 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.example1.weather.domain.model.City
+import ir.example1.weather.domain.model.Forecast
+import ir.example1.weather.domain.model.Weather
+
+import ir.example1.weather.domain.usecase.GetCurrentWeatherUseCase
+import ir.example1.weather.domain.usecase.GetForecastUseCase
+import ir.example1.weather.domain.usecase.SaveCityFullDataUseCase
 import ir.example1.weather.domain.usecase.SearchCitiesUseCase
-import ir.example1.weather.domain.usecase.SaveSelectedCityUseCase
+
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +23,9 @@ import javax.inject.Inject
 @HiltViewModel
 class CityViewModel @Inject constructor(
     private val searchCitiesUseCase: SearchCitiesUseCase,
-    private val saveSelectedCityUseCase: SaveSelectedCityUseCase
+    private val SaveCityFullDataUseCase: SaveCityFullDataUseCase,
+    private val GetCurrentWeatherUseCase: GetCurrentWeatherUseCase,
+    private val GetForecastUseCase: GetForecastUseCase
 ) : ViewModel() {
 
     private val _cities = MutableStateFlow<List<City>>(emptyList())
@@ -30,6 +38,8 @@ class CityViewModel @Inject constructor(
     val error: StateFlow<String?> = _error.asStateFlow()
 
     private var searchJob: Job? = null
+
+
 
     fun searchCities(query: String) {
         searchJob?.cancel()
@@ -51,7 +61,14 @@ class CityViewModel @Inject constructor(
 
     fun saveSelectedCity(city: City) {
         viewModelScope.launch {
-            saveSelectedCityUseCase(city)
+            val result1= GetCurrentWeatherUseCase(city.lat, city.lon, city.name)
+            val result2= GetForecastUseCase(city.lat, city.lon)
+
+
+            val weather: Weather = result1.getOrNull()!!
+            val forecast: List<Forecast> = result2.getOrNull()!!
+
+            SaveCityFullDataUseCase(city,weather, forecast)
         }
     }
 

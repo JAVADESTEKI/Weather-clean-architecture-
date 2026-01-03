@@ -2,7 +2,7 @@
 package ir.example1.weather.domain.model
 
 data class Forecast(
-    val id: Int,
+    val cityId: Long,
     val dateTime: Long,
     val dateText: String,
     val temperature: Double,

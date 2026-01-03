@@ -5,7 +5,7 @@ import ir.example1.weather.domain.model.Forecast
 
 fun Forecast.toEntity(): ForecastEntity {
     return ForecastEntity(
-        id,
+        cityId,
         dateTime,
         dateText,
         temperature,
@@ -26,7 +26,7 @@ fun Forecast.toEntity(): ForecastEntity {
 
 fun ForecastEntity.toDomain(): Forecast {
     return Forecast(
-        id,
+        cityId,
         dateTime,
         dateText,
         temperature,
