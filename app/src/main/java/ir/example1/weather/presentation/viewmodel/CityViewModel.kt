@@ -4,16 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.example1.weather.domain.model.City
-import ir.example1.weather.domain.model.Forecast
-import ir.example1.weather.domain.model.Weather
-
-import ir.example1.weather.domain.usecase.GetCurrentWeatherUseCase
-import ir.example1.weather.domain.usecase.GetForecastUseCase
-import ir.example1.weather.domain.usecase.SaveCityFullDataUseCase
 import ir.example1.weather.domain.usecase.SearchCitiesUseCase
-import ir.example1.weather.presentation.ui.adapter.CityAdapter
-import ir.example1.weather.presentation.ui.adapter.SavedCityAdapter
-
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -3,8 +3,6 @@ package ir.example1.weather.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ir.example1.weather.data.local.relation.CityFullData
-import ir.example1.weather.data.mapper.toDomain
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast
