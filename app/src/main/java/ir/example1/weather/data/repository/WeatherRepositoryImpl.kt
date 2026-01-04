@@ -3,6 +3,7 @@ package ir.example1.weather.data.repository
 
 import androidx.room.Transaction
 import ir.example1.weather.data.local.dao.CityDao
+import ir.example1.weather.data.local.entity.CityEntity
 import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.data.mapper.toDomain
 import ir.example1.weather.data.mapper.toEntity
@@ -76,10 +77,10 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getLastSelectedCity(): CityFullData? {
-        val entity = cityDao.getLastSelected()
+    override suspend fun getLastSelectedCity(): CityWeatherForecast? {
+        val entity = cityDao.getLastSelected() //CityFullData (dao relation)
 
-        return entity
+        return entity?.toDomain() // CityWeatherForecast (domain model)
 
     }
 
@@ -108,10 +109,18 @@ class WeatherRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getCityFullData(cityId: Long): CityWeatherForecast {
-        return cityDao
-            .getCityFullData(cityId)
-            .toDomain()
+//    override suspend fun getCityFullData(cityId: Long): CityWeatherForecast {
+//        return cityDao
+//            .getCityFullData(cityId)
+//            .toDomain()
+//    }
+
+    override suspend fun getSavedCities(): List<City> {
+        return cityDao.getAllCities().map { it.toDomain() }
+    }
+
+    override suspend fun deleteCity(cityId: Long?) {
+        cityDao.deleteCityById(cityId)
     }
 
 }

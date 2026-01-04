@@ -6,8 +6,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.data.mapper.toDomain
 import ir.example1.weather.domain.model.City
+import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast
 import ir.example1.weather.domain.model.Weather
+import ir.example1.weather.domain.usecase.DeleteCityUseCase
+import ir.example1.weather.domain.usecase.GetSavedCitiesUseCase
 import ir.example1.weather.domain.usecase.GetCurrentWeatherUseCase
 import ir.example1.weather.domain.usecase.GetForecastUseCase
 import ir.example1.weather.domain.usecase.GetLastSelectedCityUseCase
@@ -24,7 +27,9 @@ class WeatherViewModel @Inject constructor(
     private val getLastSelectedCityUseCase: GetLastSelectedCityUseCase,
     private val SaveCityFullDataUseCase: SaveCityFullDataUseCase,
     private val GetCurrentWeatherUseCase: GetCurrentWeatherUseCase,
-    private val GetForecastUseCase: GetForecastUseCase
+    private val GetForecastUseCase: GetForecastUseCase,
+    private val getSavedCitiesUseCase: GetSavedCitiesUseCase,
+    private val DeleteCityUseCase:DeleteCityUseCase
 ) : ViewModel() {
 
     private val _currentWeather = MutableStateFlow<Weather?>(null)
@@ -38,6 +43,9 @@ class WeatherViewModel @Inject constructor(
 
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
+
+    private val _savedCities = MutableStateFlow<List<City>>(emptyList())
+    val savedCities = _savedCities.asStateFlow()
 
     fun loadInitialWeather() {
 
@@ -59,19 +67,22 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-    fun loadWeatherData(city: CityFullData) {
+    fun loadWeatherData(city: CityWeatherForecast) {
         viewModelScope.launch {
             _loading.value = true
             _error.value = null
 
-            _currentWeather.value= city.weather.toDomain()
+            _currentWeather.value= city.weather
 //            _currentWeather.value?.cityName= city.city.name
-            _forecast.value= city.forecasts.map{it.toDomain() }
+            _forecast.value= city.forecasts.map{it }
 
             _loading.value = false
         }
     }
 
+    fun clearError() {
+        _error.value = null
+    }
     fun saveSelectedCity(city: City) {
         viewModelScope.launch {
             val result1= GetCurrentWeatherUseCase(city.lat, city.lon, city.name)
@@ -84,7 +95,21 @@ class WeatherViewModel @Inject constructor(
             SaveCityFullDataUseCase(city,weather, forecast)
         }
     }
-    fun clearError() {
-        _error.value = null
+
+    fun loadSavedCities() {
+        viewModelScope.launch {
+            _savedCities.value = getSavedCitiesUseCase()
+        }
+    }
+
+    fun selectCity(cityId:Long?){
+
+    }
+
+    fun deleteCity(cityId:Long?){
+        viewModelScope.launch {
+            DeleteCityUseCase(cityId)
+            loadSavedCities()
+        }
     }
 }

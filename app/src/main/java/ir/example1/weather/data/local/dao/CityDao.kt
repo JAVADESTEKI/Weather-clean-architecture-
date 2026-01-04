@@ -30,4 +30,12 @@ interface CityDao {
     @Transaction
     @Query("SELECT * FROM cities WHERE id = :cityId")
     suspend fun getCityFullData(cityId: Long): CityFullData
+
+    @Query("SELECT * FROM cities ORDER BY selectedAt DESC")
+    suspend fun getAllCities(): List<CityEntity>
+
+    @Query("DELETE FROM cities WHERE id = :cityId")
+    suspend fun deleteCityById(cityId: Long?)
+
+
 }

@@ -11,6 +11,8 @@ import ir.example1.weather.domain.usecase.GetCurrentWeatherUseCase
 import ir.example1.weather.domain.usecase.GetForecastUseCase
 import ir.example1.weather.domain.usecase.SaveCityFullDataUseCase
 import ir.example1.weather.domain.usecase.SearchCitiesUseCase
+import ir.example1.weather.presentation.ui.adapter.CityAdapter
+import ir.example1.weather.presentation.ui.adapter.SavedCityAdapter
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -23,9 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class CityViewModel @Inject constructor(
     private val searchCitiesUseCase: SearchCitiesUseCase,
-    private val SaveCityFullDataUseCase: SaveCityFullDataUseCase,
-    private val GetCurrentWeatherUseCase: GetCurrentWeatherUseCase,
-    private val GetForecastUseCase: GetForecastUseCase
+
 ) : ViewModel() {
 
     private val _cities = MutableStateFlow<List<City>>(emptyList())
@@ -59,18 +59,7 @@ class CityViewModel @Inject constructor(
         }
     }
 
-    fun saveSelectedCity(city: City) {
-        viewModelScope.launch {
-            val result1= GetCurrentWeatherUseCase(city.lat, city.lon, city.name)
-            val result2= GetForecastUseCase(city.lat, city.lon)
 
-
-            val weather: Weather = result1.getOrNull()!!
-            val forecast: List<Forecast> = result2.getOrNull()!!
-
-            SaveCityFullDataUseCase(city,weather, forecast)
-        }
-    }
 
     fun clearError() {
         _error.value = null

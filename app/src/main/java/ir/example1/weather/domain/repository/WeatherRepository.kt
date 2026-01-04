@@ -1,5 +1,6 @@
 package ir.example1.weather.domain.repository
 
+import ir.example1.weather.data.local.entity.CityEntity
 import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.model.CityWeatherForecast
@@ -28,7 +29,7 @@ interface WeatherRepository {
 
     // مدیریت شهرهای ذخیره‌شده
 
-    suspend fun getLastSelectedCity(): CityFullData?
+    suspend fun getLastSelectedCity(): CityWeatherForecast?
 
 
 
@@ -39,5 +40,7 @@ interface WeatherRepository {
         forecasts: List<Forecast>
     )
 
-    suspend fun getCityFullData(cityId: Long): CityWeatherForecast
+//    suspend fun getCityFullData(cityId: Long): CityWeatherForecast
+    suspend fun getSavedCities(): List<City>
+    suspend fun deleteCity(cityId: Long?)
 }

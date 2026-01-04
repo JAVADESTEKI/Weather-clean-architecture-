@@ -95,11 +95,17 @@ class CityListActivity : AppCompatActivity() {
     private fun navigateToMainActivity(city: ir.example1.weather.domain.model.City) {
         lifecycleScope.launch {
             // ذخیره شهر انتخاب‌شده به‌عنوان آخرین شهر
-            viewModel.saveSelectedCity(city)
 
             // سپس رفتن به صفحه اصلی با پارامترهای شهر
             val intent = Intent(this@CityListActivity, MainActivity::class.java).apply {
-                putExtra("isSaved", "1")
+
+                putExtra("id", city.id)
+                putExtra("name", city.name)
+                putExtra("country", city.country)
+                putExtra("lat", city.lat)
+                putExtra("lon", city.lon)
+                putExtra("selectetAt", city.selectetAt)
+                putExtra("localName", city.localName)
             }
             startActivity(intent)
             finish()

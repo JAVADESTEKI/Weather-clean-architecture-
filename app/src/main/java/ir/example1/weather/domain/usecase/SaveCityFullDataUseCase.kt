@@ -2,6 +2,7 @@ package ir.example1.weather.domain.usecase
 
 import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.domain.model.City
+import ir.example1.weather.domain.model.CityWeatherForecast
 import ir.example1.weather.domain.model.Forecast
 import ir.example1.weather.domain.model.Weather
 import ir.example1.weather.domain.repository.WeatherRepository
@@ -17,5 +18,5 @@ class SaveCityFullDataUseCase @Inject constructor(
 class GetLastSelectedCityUseCase @Inject constructor(
     private val repository: WeatherRepository
 ) {
-    suspend operator fun invoke(): CityFullData? = repository.getLastSelectedCity()
+    suspend operator fun invoke(): CityWeatherForecast? = repository.getLastSelectedCity()
 }
