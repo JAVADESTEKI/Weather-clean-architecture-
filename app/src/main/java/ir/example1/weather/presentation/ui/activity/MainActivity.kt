@@ -25,6 +25,9 @@ import ir.example1.weather.presentation.ui.utils.WeatherIconMapper
 import ir.example1.weather.presentation.viewmodel.WeatherViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -151,10 +154,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateCurrentWeatherUI(weather: ir.example1.weather.domain.model.Weather) {
+        val date = Date(weather.timestamp)
+        val formatter = SimpleDateFormat("yyyy/MM/dd  HH:mm", Locale.getDefault())
 
         binding.apply {
             txtCity.text = weather.cityName
             txtStatus.text = weather.condition
+            txtTodayDate.text= "Last update: ${formatter.format(date)}"
             txtWindNum.text = "${weather.windSpeed.toInt()} Km/h"
             txtHumidityNum.text = "${weather.humidity}%"
             txtTodayDegree.text = "${weather.temperature.toInt()}°"

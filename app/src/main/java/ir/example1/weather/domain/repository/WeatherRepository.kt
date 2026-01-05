@@ -16,23 +16,16 @@ interface WeatherRepository {
         unit: String
     ):Result<Weather>
 
-
     suspend fun getForecastWea(
         lat: Double,
         lon: Double,
         unit: String
     ):Result<List<Forecast>>
-
-
-
     suspend fun searchCities(query: String, limit: Int): Result<List<City>>
 
     // مدیریت شهرهای ذخیره‌شده
 
     suspend fun getLastSelectedCityFullData(cityId:Long): CityWeatherForecast?
-
-
-
 
     suspend fun saveCityFullData(
         city: City,
@@ -40,7 +33,6 @@ interface WeatherRepository {
         forecasts: List<Forecast>
     ):Long
 
-//    suspend fun getCityFullData(cityId: Long): CityWeatherForecast
     suspend fun getSavedCities(): List<City>
     suspend fun deleteCity(cityId: Long?)
 

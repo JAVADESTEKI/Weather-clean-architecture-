@@ -84,14 +84,6 @@ class WeatherRepositoryImpl @Inject constructor(
 
     }
 
-//    override fun getCachedWeather(): Flow<Weather?> = flow {
-//        emit(weatherDao.getWeather()?.toDomain())
-//    }
-//
-//    override suspend fun cacheWeather(weather: Weather) {
-//        weatherDao.insertWeather(weather.toEntity())
-//    }
-
     @Transaction
     override suspend fun saveCityFullData(
         city: City,
