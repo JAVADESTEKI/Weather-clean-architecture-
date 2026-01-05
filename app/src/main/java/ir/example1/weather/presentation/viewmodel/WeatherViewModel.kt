@@ -1,5 +1,6 @@
 package ir.example1.weather.presentation.viewmodel
 
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -77,18 +78,30 @@ class WeatherViewModel @Inject constructor(
 
                     val city= getLastSelectedCityUseCase(cityId)
                     if(city!=null) {
-                        val result1 = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
-                        val result2 = getForecastUseCase(city.lat, city.lon)
+                        var weather: Weather?= null
+                        var forecast: List<Forecast>?= null
 
-//                        must write with on success and on failure
-                        if(result1!=null && result2!=null){
-                            val weather: Weather = result1.getOrNull()!!
-                            val forecast: List<Forecast> = result2.getOrNull()!!
+                        getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
+                            onSuccess = { it ->
+                                weather= it
+                            },
+                            onFailure = { error ->
+                                _error.value="Failed to recieve weather data!"
+                            }
+                        )
+                        getForecastUseCase(city.lat, city.lon).fold(
+                            onSuccess = { it ->
+                                forecast= it
+                            },
+                            onFailure = { error ->
+                                _error.value="Failed to recieve weather data!"
+                            }
+                        )
+                        if(weather!= null && forecast!= null) {
                             updateCityFullDataUseCase(cityId, weather, forecast)
+                            val cityTemp = getLastSelectedCityFullDataUseCase(cityId)
+                            loadWeatherData(cityTemp)
                         }
-
-                        val city2 = getLastSelectedCityFullDataUseCase(cityId)
-                        loadWeatherData(city2)
                     }
                 }
 
@@ -103,7 +116,6 @@ class WeatherViewModel @Inject constructor(
                 _error.value = null
 
                 _currentWeather.value= city.weather
-    //            _currentWeather.value?.cityName= city.city.name
                 _forecast.value= city.forecasts.map{it }
 
                 _loading.value = false
@@ -115,16 +127,29 @@ class WeatherViewModel @Inject constructor(
     }
     fun saveSelectedCity(city: City) {
         viewModelScope.launch {
-            val result1= getCurrentWeatherUseCase(city.lat, city.lon, city.name)
-            val result2= getForecastUseCase(city.lat, city.lon)
+            var weather: Weather? = null
+            var forecast: List<Forecast>? = null
 
-
-            val weather: Weather = result1.getOrNull()!!
-            val forecast: List<Forecast> = result2.getOrNull()!!
-
-
-            val cityId=saveCityFullDataUseCase(city,weather, forecast)
-            saveLastSelectedCityIdUseCase(cityId)
+            getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
+                onSuccess = { it ->
+                    weather = it
+                },
+                onFailure = { error ->
+                    _error.value = "Failed to recieve weather data!"
+                }
+            )
+            getForecastUseCase(city.lat, city.lon).fold(
+                onSuccess = { it ->
+                    forecast = it
+                },
+                onFailure = { error ->
+                    _error.value = "Failed to recieve weather data!"
+                }
+            )
+            if (weather != null && forecast != null) {
+                val cityId=saveCityFullDataUseCase(city,weather, forecast)
+                saveLastSelectedCityIdUseCase(cityId)
+            }
         }
     }
 
