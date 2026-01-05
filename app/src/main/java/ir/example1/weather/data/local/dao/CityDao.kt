@@ -9,6 +9,7 @@ import ir.example1.weather.data.local.relation.CityFullData
 import ir.example1.weather.data.local.entity.CityEntity
 import ir.example1.weather.data.local.entity.ForecastEntity
 import ir.example1.weather.data.local.entity.WeatherEntity
+import ir.example1.weather.domain.model.City
 
 @Dao
 interface CityDao {
@@ -24,8 +25,8 @@ interface CityDao {
 
 
     @Transaction
-    @Query("SELECT * FROM cities ORDER BY selectedAt DESC LIMIT 1")
-    suspend fun getLastSelected(): CityFullData?
+    @Query("SELECT * FROM cities WHERE id= :cityId ORDER BY selectedAt DESC LIMIT 1")
+    suspend fun getLastSelectedCityFullData(cityId: Long): CityFullData?
 
     @Transaction
     @Query("SELECT * FROM cities WHERE id = :cityId")
@@ -37,5 +38,28 @@ interface CityDao {
     @Query("DELETE FROM cities WHERE id = :cityId")
     suspend fun deleteCityById(cityId: Long?)
 
+    @Query("SELECT id FROM cities ORDER BY selectedAt DESC LIMIT 1")
+    suspend fun getLastInsertedId(): Long
+
+
+
+    @Query("DELETE FROM weather WHERE cityId = :cityId")
+    suspend fun deleteWeatherByCityId(cityId: Long)
+
+    @Query("DELETE FROM forecast WHERE cityId = :cityId")
+    suspend fun deleteForecastsByCityId(cityId: Long)
+
+
+    @Query("SELECT * FROM cities WHERE id= :cityId ORDER BY selectedAt DESC LIMIT 1")
+    suspend fun getLastSelectedCity(cityId: Long): CityEntity?
+
+
+    @Transaction
+    suspend fun updateWeatherForecasts(cityId: Long,weather: WeatherEntity, forecasts: List<ForecastEntity>) {
+        deleteWeatherByCityId(cityId)
+        deleteForecastsByCityId(cityId)
+        insertWeather(weather)
+        insertForecasts(forecasts)
+    }
 
 }

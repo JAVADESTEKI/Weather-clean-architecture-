@@ -10,13 +10,8 @@ import javax.inject.Inject
 
 class SaveCityFullDataUseCase @Inject constructor(
     private val repository: WeatherRepository
-) {
-    suspend operator fun invoke(city: City, weather: Weather, forecasts: List<Forecast>) =
+)  {
+    suspend operator fun invoke(city: City, weather: Weather, forecasts: List<Forecast>):Long =
         repository.saveCityFullData(city, weather, forecasts)
 }
 
-class GetLastSelectedCityUseCase @Inject constructor(
-    private val repository: WeatherRepository
-) {
-    suspend operator fun invoke(): CityWeatherForecast? = repository.getLastSelectedCity()
-}

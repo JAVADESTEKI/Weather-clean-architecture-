@@ -77,8 +77,8 @@ class WeatherRepositoryImpl @Inject constructor(
     }
 
 
-    override suspend fun getLastSelectedCity(): CityWeatherForecast? {
-        val entity = cityDao.getLastSelected() //CityFullData (dao relation)
+    override suspend fun getLastSelectedCityFullData(cityId:Long): CityWeatherForecast? {
+        val entity = cityDao.getLastSelectedCityFullData(cityId) //CityFullData (dao relation)
 
         return entity?.toDomain() // CityWeatherForecast (domain model)
 
@@ -97,7 +97,7 @@ class WeatherRepositoryImpl @Inject constructor(
         city: City,
         weather: Weather,
         forecasts: List<Forecast>
-    ) {
+    ) :Long{
         val cityId = cityDao.insertCity(city.toEntity())
 
         cityDao.insertWeather(
@@ -107,13 +107,8 @@ class WeatherRepositoryImpl @Inject constructor(
         cityDao.insertForecasts(
             forecasts.map { it.toEntity().copy(cityId = cityId) }
         )
+        return cityId
     }
-
-//    override suspend fun getCityFullData(cityId: Long): CityWeatherForecast {
-//        return cityDao
-//            .getCityFullData(cityId)
-//            .toDomain()
-//    }
 
     override suspend fun getSavedCities(): List<City> {
         return cityDao.getAllCities().map { it.toDomain() }
@@ -123,4 +118,22 @@ class WeatherRepositoryImpl @Inject constructor(
         cityDao.deleteCityById(cityId)
     }
 
+
+    override suspend fun getLastInsertedIdUseCase():Long{
+        return cityDao.getLastInsertedId()
+    }
+
+
+    @Transaction
+    override suspend fun updateCityFullData(cityId:Long,weather: Weather, forecasts: List<Forecast>){
+
+        val weather= weather.toEntity().copy(cityId = cityId)
+        val forecasts=forecasts.map { it.toEntity().copy(cityId = cityId) }
+        cityDao.updateWeatherForecasts(cityId,weather, forecasts)
+
+    }
+
+    override suspend fun getLastSelectedCity(cityId:Long): City?{
+        return cityDao.getLastSelectedCity(cityId)?.toDomain()
+    }
 }

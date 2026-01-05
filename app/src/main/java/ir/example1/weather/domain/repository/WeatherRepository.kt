@@ -29,7 +29,7 @@ interface WeatherRepository {
 
     // مدیریت شهرهای ذخیره‌شده
 
-    suspend fun getLastSelectedCity(): CityWeatherForecast?
+    suspend fun getLastSelectedCityFullData(cityId:Long): CityWeatherForecast?
 
 
 
@@ -38,9 +38,15 @@ interface WeatherRepository {
         city: City,
         weather: Weather,
         forecasts: List<Forecast>
-    )
+    ):Long
 
 //    suspend fun getCityFullData(cityId: Long): CityWeatherForecast
     suspend fun getSavedCities(): List<City>
     suspend fun deleteCity(cityId: Long?)
+
+    suspend fun getLastInsertedIdUseCase():Long
+
+    suspend fun updateCityFullData(cityId:Long,weather: Weather, forecasts: List<Forecast>)
+
+    suspend fun getLastSelectedCity(cityId:Long): City?
 }

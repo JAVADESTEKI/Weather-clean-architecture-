@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ir.example1.weather.R
-import ir.example1.weather.data.mapper.toEntity
 import ir.example1.weather.databinding.ActivityMainBinding
 import ir.example1.weather.domain.model.City
 
@@ -112,6 +111,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         binding.addCity.setOnClickListener {
             startActivity(Intent(this, CityListActivity::class.java))
+            finish()
         }
 
         binding.refreshCurrunt.setOnClickListener {
@@ -244,7 +244,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 🔥 دقیقاً زیر moreCity
         popupWindow.showAsDropDown(binding.moreCity, -100, 10)
     }
 }

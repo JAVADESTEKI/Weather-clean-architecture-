@@ -15,11 +15,11 @@ data class CityFullData(
         parentColumn = "id",
         entityColumn = "cityId"
     )
-    val weather: WeatherEntity,
+    val weather: WeatherEntity?,
 
     @Relation(
         parentColumn = "id",
         entityColumn = "cityId"
     )
-    val forecasts: List<ForecastEntity>
+    val forecasts: List<ForecastEntity>?
 )
