@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -69,42 +70,44 @@ class WeatherViewModel @Inject constructor(
                 }
         }
     }
+
+
     fun refreshWeather() {
         viewModelScope.launch {
+            val cityId= getLastSelectedCityIdUseCase()
+            .filterNotNull()
+            .first()
 
-            getLastSelectedCityIdUseCase()
-                .filterNotNull()
-                .collect { cityId: Long ->
+            if(cityId!= null) {
+                val city = getLastSelectedCityUseCase(cityId)
+                if (city != null) {
+                    var weather: Weather? = null
+                    var forecast: List<Forecast>? = null
 
-                    val city= getLastSelectedCityUseCase(cityId)
-                    if(city!=null) {
-                        var weather: Weather?= null
-                        var forecast: List<Forecast>?= null
-
-                        getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
-                            onSuccess = { it ->
-                                weather= it
-                            },
-                            onFailure = { error ->
-                                _error.value="Failed to recieve weather data!"
-                            }
-                        )
-                        getForecastUseCase(city.lat, city.lon).fold(
-                            onSuccess = { it ->
-                                forecast= it
-                            },
-                            onFailure = { error ->
-                                _error.value="Failed to recieve weather data!"
-                            }
-                        )
-                        if(weather!= null && forecast!= null) {
-                            updateCityFullDataUseCase(cityId, weather, forecast)
-                            val cityTemp = getLastSelectedCityFullDataUseCase(cityId)
-                            loadWeatherData(cityTemp)
+                    getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
+                        onSuccess = { it ->
+                            weather = it
+                        },
+                        onFailure = { error ->
                         }
+                    )
+                    getForecastUseCase(city.lat, city.lon).fold(
+                        onSuccess = { it ->
+                            forecast = it
+                        },
+                        onFailure = { error ->
+                        }
+                    )
+                    if (weather == null || forecast == null)
+                        _error.value = "Failed to recieve weather data!"
+                    else {
+                        updateCityFullDataUseCase(cityId, weather, forecast)
+                        val cityTemp = getLastSelectedCityFullDataUseCase(cityId)
+                        loadWeatherData(cityTemp)
                     }
                 }
 
+            }
         }
     }
 
