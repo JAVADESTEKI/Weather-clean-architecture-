@@ -22,6 +22,7 @@ interface WeatherRepository {
         unit: String
     ):Result<List<Forecast>>
     suspend fun searchCities(query: String, limit: Int): Result<List<City>>
+    suspend fun searchCitiesReverse(lat: Double, lon: Double, limit: Int): Result<List<City>>
 
     // مدیریت شهرهای ذخیره‌شده
 

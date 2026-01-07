@@ -8,6 +8,7 @@
     android:background="#04082E">
 
     <TextView
+        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -19,6 +20,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/gdACityListH07" />
+
+
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gdACityListH07"
@@ -78,22 +81,58 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardGps"
+                android:layout_width="60dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="5dp" android:layout_marginEnd="15dp"
+                app:layout_constraintTop_toTopOf="@id/txtinptlayoutAddCity"
+                app:layout_constraintBottom_toBottomOf="@id/txtinptlayoutAddCity"
+                app:layout_constraintStart_toEndOf="@id/txtinptlayoutAddCity"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:cardBackgroundColor="#EFF3F8"
+                app:cardElevation="0dp"
+                app:shapeAppearanceOverlay="@style/GpsCardShape">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUseGps"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:icon="@drawable/ic_gps"
+                    app:iconTint="#000000"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    android:insetLeft="0dp"
+                    android:insetRight="0dp"
+                    android:text=""
+                    app:backgroundTint="@android:color/transparent"
+                    app:rippleColor="?attr/colorControlHighlight"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/txtinptlayoutAddCity"
                 style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_margin="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="1dp"
+                android:layout_marginBottom="15dp"
                 app:boxBackgroundColor="#FDFDFD"
-                app:boxCornerRadiusBottomEnd="12dp"
-                app:boxCornerRadiusBottomStart="12dp"
-                app:boxCornerRadiusTopEnd="12dp"
                 app:boxCornerRadiusTopStart="12dp"
+                app:boxCornerRadiusBottomStart="12dp"
+                app:boxCornerRadiusTopEnd="0dp"
+                app:boxCornerRadiusBottomEnd="0dp"
                 app:boxStrokeColor="#B8C2CA"
                 app:hintTextColor="#7F8C8D"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/cardGps"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/imgAddingCar">
+
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/edtCityAdd"
                     android:layout_width="match_parent"
@@ -103,6 +142,7 @@
                     android:maxLines="1"
                     android:textColor="#2C3E50"
                     android:textSize="14dp" />
+
             </com.google.android.material.textfield.TextInputLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -110,9 +150,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="15dp"
-                app:layout_constraintTop_toBottomOf="@+id/txtinptlayoutAddCity"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@+id/txtinptlayoutAddCity" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

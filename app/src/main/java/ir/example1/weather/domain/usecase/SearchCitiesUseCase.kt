@@ -14,4 +14,12 @@ class SearchCitiesUseCase @Inject constructor(
     ): Result<List<City>> {
         return repository.searchCities(query, limit)
     }
+
+    suspend operator fun invoke(
+        lat: Double,
+        lon: Double,
+        limit: Int=10
+    ): Result<List<City>> {
+        return repository.searchCitiesReverse(lat, lon, limit)
+    }
 }

@@ -76,6 +76,17 @@ class WeatherRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun searchCitiesReverse(lat: Double, lon: Double, limit: Int): Result<List<City>>{
+        return try {
+            val response = apiService.getCitiesListByLatLon(lat,lon,limit, apiKey)
+            Result.success(cityMapper.mapToCityList(response))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+
+    }
+
+
 
     override suspend fun getLastSelectedCityFullData(cityId:Long): CityWeatherForecast? {
         val entity = cityDao.getLastSelectedCityFullData(cityId) //CityFullData (dao relation)

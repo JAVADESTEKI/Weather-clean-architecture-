@@ -8,4 +8,12 @@
     <style name="Theme.Weather" parent="Base.Theme.Weather" >
         <item name="android:windowTranslucentNavigation">true</item>
     </style>
+
+    <style name="GpsCardShape">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">12dp</item>
+        <item name="cornerSizeBottomRight">12dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
 </resources>

@@ -30,6 +30,14 @@ interface ApiServices {
     suspend fun getCitiesList(
         @Query("q") q: String,
         @Query("limit") limit: Int = 10,
-        @Query("appid") ApiKey: String
+        @Query("appid") apiKey: String
+    ): CityResponse
+
+    @GET("geo/1.0/reverse")
+    suspend fun getCitiesListByLatLon(
+        @Query("lat") lat: Double,
+        @Query("lon") lon: Double,
+        @Query("limit") limit: Int = 10,
+        @Query("appid") apiKey: String
     ): CityResponse
 }
