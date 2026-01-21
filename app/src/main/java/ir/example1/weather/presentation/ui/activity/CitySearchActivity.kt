@@ -24,12 +24,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import ir.example1.weather.databinding.ActivityCityListBinding
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.presentation.ui.adapter.CityAdapter
-import ir.example1.weather.presentation.viewmodel.CityViewModel
+import ir.example1.weather.presentation.viewmodel.CitySearchViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
-class CityListActivity : AppCompatActivity() {
+class CitySearchActivity : AppCompatActivity() {
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var settingsClient: SettingsClient
@@ -37,7 +38,7 @@ class CityListActivity : AppCompatActivity() {
     private val REQUEST_CHECK_SETTINGS = 1001
 
     private lateinit var binding: ActivityCityListBinding
-    private val viewModel: CityViewModel by viewModels()
+    private val viewModel: CitySearchViewModel by viewModels()
 
     private val cityAdapter by lazy {
         CityAdapter { city ->
@@ -133,6 +134,7 @@ class CityListActivity : AppCompatActivity() {
             null
         ).addOnSuccessListener { location ->
             if (location != null) {
+
                 handleLocation(location.latitude, location.longitude)
             } else {
                 Toast.makeText(this, "Couldn't get current location", Toast.LENGTH_SHORT).show()
@@ -173,30 +175,23 @@ class CityListActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         binding.addingCityRecyclerView.apply {
-            layoutManager = LinearLayoutManager(this@CityListActivity)
+            layoutManager = LinearLayoutManager(this@CitySearchActivity)
             adapter = cityAdapter
         }
     }
 
     private fun setupObservers() {
         lifecycleScope.launch {
-            viewModel.cities.collectLatest { cities ->
-                cityAdapter.submitList(cities)
-            }
-        }
+            viewModel.uiState.collectLatest { state ->
+                cityAdapter.submitList(state.cities)
 
-        lifecycleScope.launch {
-            viewModel.loading.collectLatest { isLoading ->
-                binding.progressBar2.visibility = if (isLoading) View.VISIBLE else View.GONE
-            }
-        }
+                binding.progressBar2.visibility =
+                    if (state.isLoading) View.VISIBLE else View.GONE
 
-        lifecycleScope.launch {
-            viewModel.error.collectLatest { error ->
-                error?.let {
-                    Toast.makeText(this@CityListActivity, it, Toast.LENGTH_SHORT).show()
-                    viewModel.clearError()
-                }
+//                state.error?.let {
+//                    Toast.makeText(this@CityListActivity, it, Toast.LENGTH_SHORT).show()
+//                    viewModel.clearError()
+//                }
             }
         }
     }
@@ -215,7 +210,7 @@ class CityListActivity : AppCompatActivity() {
 
     private fun navigateToMainActivity(city: City) {
         lifecycleScope.launch {
-            val intent = Intent(this@CityListActivity, MainActivity::class.java).apply {
+            val intent = Intent(this@CitySearchActivity, MainActivity::class.java).apply {
                 putExtra("id", city.id)
                 putExtra("name", city.name)
                 putExtra("country", city.country)

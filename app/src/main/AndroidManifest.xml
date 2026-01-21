@@ -19,7 +19,7 @@
         android:theme="@style/Theme.Weather">
 
         <activity
-            android:name=".presentation.ui.activity.CityListActivity"
+            android:name=".presentation.ui.activity.CitySearchActivity"
             android:exported="false" />
         <activity
             android:name=".presentation.ui.activity.MainActivity"

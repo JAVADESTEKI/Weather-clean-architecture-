@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListeners() {
         binding.addCity.setOnClickListener {
-            startActivity(Intent(this, CityListActivity::class.java))
+            startActivity(Intent(this, CitySearchActivity::class.java))
             finish()
         }
 
