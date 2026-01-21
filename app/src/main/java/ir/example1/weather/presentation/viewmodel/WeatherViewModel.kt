@@ -45,20 +45,9 @@ class WeatherViewModel @Inject constructor(
     private val getLastSelectedCityUseCase:GetLastSelectedCityUseCase
 ) : ViewModel() {
 
-    private val _currentWeather = MutableStateFlow<Weather?>(null)
-    val currentWeather: StateFlow<Weather?> = _currentWeather.asStateFlow()
 
-    private val _forecast = MutableStateFlow<List<Forecast>>(emptyList())
-    val forecast: StateFlow<List<Forecast>> = _forecast.asStateFlow()
-
-    private val _loading = MutableStateFlow(false)
-    val loading: StateFlow<Boolean> = _loading.asStateFlow()
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
-
-    private val _savedCities = MutableStateFlow<List<City>>(emptyList())
-    val savedCities = _savedCities.asStateFlow()
+    val _uiState= MutableStateFlow(WeatherUiState())
+    val uiState= _uiState.asStateFlow()
 
     fun loadInitialWeather() {
         viewModelScope.launch {
@@ -78,104 +67,98 @@ class WeatherViewModel @Inject constructor(
             .filterNotNull()
             .first()
 
-            if(cityId!= null) {
-                val city = getLastSelectedCityUseCase(cityId)
-                if (city != null) {
-                    var weather: Weather? = null
-                    var forecast: List<Forecast>? = null
+            val city = getLastSelectedCityUseCase(cityId) ?: return@launch
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-                    getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
-                        onSuccess = { it ->
-                            weather = it
-                        },
-                        onFailure = { error ->
-                        }
-                    )
-                    getForecastUseCase(city.lat, city.lon).fold(
-                        onSuccess = { it ->
-                            forecast = it
-                        },
-                        onFailure = { error ->
-                        }
-                    )
-                    if (weather == null || forecast == null)
-                        _error.value = "Failed to recieve weather data!"
-                    else {
-                        updateCityFullDataUseCase(cityId, weather, forecast)
-                        val cityTemp = getLastSelectedCityFullDataUseCase(cityId)
-                        loadWeatherData(cityTemp)
-                    }
-                }
+            val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
+            val forecastResult = getForecastUseCase(city.lat, city.lon)
 
+            if (weatherResult.isFailure || forecastResult.isFailure) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to receive weather data!"
+                )
+                return@launch
             }
+
+            val weather = weatherResult.getOrNull()!!
+            val forecast = forecastResult.getOrNull()!!
+
+            updateCityFullDataUseCase(cityId, weather, forecast)
+
+            val updatedCity = getLastSelectedCityFullDataUseCase(cityId)
+            loadWeatherData(updatedCity)
+
+
+
         }
     }
 
     fun loadWeatherData(city: CityWeatherForecast?) {
 
-        if(city!=null&& city.weather!=null && city.forecasts!=null)
-            viewModelScope.launch {
-                _loading.value = true
-                _error.value = null
+        if (city == null || city.weather == null || city.forecasts == null) return
 
-                _currentWeather.value= city.weather
-                _forecast.value= city.forecasts.map{it }
-
-                _loading.value = false
-            }
-    }
-
-    fun clearError() {
-        _error.value = null
+        _uiState.value = _uiState.value.copy(
+            isLoading = false,
+            currentWeather = city.weather,
+            forecast = city.forecasts,
+            error = null
+        )
     }
     fun saveSelectedCity(city: City) {
         viewModelScope.launch {
-            var weather: Weather? = null
-            var forecast: List<Forecast>? = null
+            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
 
-            getCurrentWeatherUseCase(city.lat, city.lon, city.name).fold(
-                onSuccess = { it ->
-                    weather = it
-                },
-                onFailure = { error ->
-                    _error.value = "Failed to recieve weather data!"
-                }
-            )
-            getForecastUseCase(city.lat, city.lon).fold(
-                onSuccess = { it ->
-                    forecast = it
-                },
-                onFailure = { error ->
-                    _error.value = "Failed to recieve weather data!"
-                }
-            )
-            if (weather != null && forecast != null) {
-                val cityId=saveCityFullDataUseCase(city,weather, forecast)
-                saveLastSelectedCityIdUseCase(cityId)
+            val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
+            val forecastResult = getForecastUseCase(city.lat, city.lon)
+
+            if (weatherResult.isFailure || forecastResult.isFailure) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    error = "Failed to receive weather data!"
+                )
+                return@launch
             }
+            val cityId = saveCityFullDataUseCase(
+                city,
+                weatherResult.getOrNull()!!,
+                forecastResult.getOrNull()!!
+            )
+            saveLastSelectedCityIdUseCase(cityId)
+            _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
 
     fun loadSavedCities() {
         viewModelScope.launch {
-            _savedCities.value = getSavedCitiesUseCase()
+            val cities = getSavedCitiesUseCase()
+            _uiState.value.copy(savedCities = cities)
         }
     }
 
     fun selectCity(cityId:Long?){
-        if(cityId!=null)
-            viewModelScope.launch {
-                saveLastSelectedCityIdUseCase(cityId)
-            }
+        if (cityId == null) return
+        viewModelScope.launch {
+            saveLastSelectedCityIdUseCase(cityId)
+        }
     }
 
     fun deleteCity(cityId:Long?){
+        if (cityId == null) return
+
         viewModelScope.launch {
             deleteCityUseCase(cityId)
-            loadSavedCities()
 
-            val cityId= getLastInsertedIdUseCase()
-            saveLastSelectedCityIdUseCase(cityId)
+            val cities = getSavedCitiesUseCase()
+            val newId = getLastInsertedIdUseCase()
+
+            saveLastSelectedCityIdUseCase(newId)
+
+            _uiState.value = _uiState.value.copy(savedCities = cities)
         }
+    }
+
+    fun clearError() {
+        _uiState.value = _uiState.value.copy(error = null)
     }
 }

@@ -70,45 +70,28 @@ class MainActivity : AppCompatActivity() {
     private fun setupObservers() {
 
         lifecycleScope.launch {
-            viewModel.loadSavedCities()
-        }
-        lifecycleScope.launch {
-            viewModel.currentWeather.collectLatest { weather ->
-                weather?.let { updateCurrentWeatherUI(it) }
-            }
-        }
+            viewModel.uiState.collectLatest { state->
+                // Loading
+                binding.progressBar.visibility =
+                    if (state.isLoading) View.VISIBLE else View.GONE
 
-        lifecycleScope.launch {
-            viewModel.forecast.collectLatest { forecastList ->
-                updateForecastUI(forecastList)
-            }
-        }
+                // Current weather
+                state.currentWeather?.let {
+                    updateCurrentWeatherUI(it)
+                }
 
-        lifecycleScope.launch {
-            viewModel.loading.collectLatest { isLoading ->
-                binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-            }
-        }
+                // Forecast
+                updateForecastUI(state.forecast)
 
-        lifecycleScope.launch {
-            viewModel.error.collectLatest { error ->
-                error?.let {
+                state.error?.let {
                     Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
                     viewModel.clearError()
                 }
+
             }
+//            viewModel.loadSavedCities()
+
         }
-
-        lifecycleScope.launch {
-            viewModel.error.collectLatest { error ->
-                error?.let {
-                    Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
-                    viewModel.clearError()
-                }
-            }
-        }
-
-
     }
 
     private fun setupClickListeners() {
@@ -236,9 +219,10 @@ class MainActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             viewModel.loadSavedCities()
-            viewModel.savedCities.collectLatest { cities ->
+
+            viewModel.uiState.collectLatest { state ->
                 recycler.adapter = SavedCityAdapter(
-                    cities = cities.map { it }, // یا مستقیم Domain استفاده کن
+                    cities = state.savedCities.map { it },
                     onSelect = { id ->
                         viewModel.selectCity(id)
                         popupWindow.dismiss()
