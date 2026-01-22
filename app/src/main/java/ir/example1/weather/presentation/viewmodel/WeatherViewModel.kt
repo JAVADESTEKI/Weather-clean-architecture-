@@ -1,5 +1,6 @@
 package ir.example1.weather.presentation.viewmodel
 
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -36,25 +38,25 @@ class WeatherViewModel @Inject constructor(
     private val getCurrentWeatherUseCase: GetCurrentWeatherUseCase,
     private val getForecastUseCase: GetForecastUseCase,
     private val getSavedCitiesUseCase: GetSavedCitiesUseCase,
-    private val deleteCityUseCase:DeleteCityUseCase,
+    private val deleteCityUseCase: DeleteCityUseCase,
     private val getLastSelectedCityIdUseCase: GetLastSelectedCityIdUseCase,
     private val saveLastSelectedCityIdUseCase: SaveLastSelectedCityIdUseCase,
     private val getLastInsertedIdUseCase: GetLastInsertedIdUseCase,
     private val updateCityFullDataUseCase: UpdateCityFullDataUseCase,
     private val getLastSelectedCityFullDataUseCase: GetLastSelectedCityFullDataUseCase,
-    private val getLastSelectedCityUseCase:GetLastSelectedCityUseCase
+    private val getLastSelectedCityUseCase: GetLastSelectedCityUseCase
 ) : ViewModel() {
 
 
-    val _uiState= MutableStateFlow(WeatherUiState())
-    val uiState= _uiState.asStateFlow()
+    val _uiState = MutableStateFlow(WeatherUiState())
+    val uiState = _uiState.asStateFlow()
 
     fun loadInitialWeather() {
         viewModelScope.launch {
             getLastSelectedCityIdUseCase()
                 .filterNotNull()
                 .collect { cityId: Long ->
-                    val city= getLastSelectedCityFullDataUseCase(cityId)
+                    val city = getLastSelectedCityFullDataUseCase(cityId)
                     loadWeatherData(city)
                 }
         }
@@ -63,21 +65,24 @@ class WeatherViewModel @Inject constructor(
 
     fun refreshWeather() {
         viewModelScope.launch {
-            val cityId= getLastSelectedCityIdUseCase()
-            .filterNotNull()
-            .first()
+            val cityId = getLastSelectedCityIdUseCase()
+                .filterNotNull()
+                .first()
 
             val city = getLastSelectedCityUseCase(cityId) ?: return@launch
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
             val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
             val forecastResult = getForecastUseCase(city.lat, city.lon)
 
             if (weatherResult.isFailure || forecastResult.isFailure) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Failed to receive weather data!"
-                )
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Failed to receive weather data!"
+                    )
+                }
+
                 return@launch
             }
 
@@ -90,7 +95,6 @@ class WeatherViewModel @Inject constructor(
             loadWeatherData(updatedCity)
 
 
-
         }
     }
 
@@ -98,13 +102,16 @@ class WeatherViewModel @Inject constructor(
 
         if (city == null || city.weather == null || city.forecasts == null) return
 
-        _uiState.value = _uiState.value.copy(
-            isLoading = false,
-            currentWeather = city.weather,
-            forecast = city.forecasts,
-            error = null
-        )
+        _uiState.update {
+            it.copy(
+                isLoading = false,
+                currentWeather = city.weather,
+                forecast = city.forecasts,
+                error = null
+            )
+        }
     }
+
     fun saveSelectedCity(city: City) {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, error = null)
@@ -113,37 +120,45 @@ class WeatherViewModel @Inject constructor(
             val forecastResult = getForecastUseCase(city.lat, city.lon)
 
             if (weatherResult.isFailure || forecastResult.isFailure) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    error = "Failed to receive weather data!"
+
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Failed to receive weather data!"
+                    )
+                    return@launch
+                }
+                val cityId = saveCityFullDataUseCase(
+                    city,
+                    weatherResult.getOrNull()!!,
+                    forecastResult.getOrNull()!!
                 )
-                return@launch
+                saveLastSelectedCityIdUseCase(cityId)
+                _uiState.update {
+                    it.copy(
+                        isLoading = false
+                    )
+                }
             }
-            val cityId = saveCityFullDataUseCase(
-                city,
-                weatherResult.getOrNull()!!,
-                forecastResult.getOrNull()!!
-            )
-            saveLastSelectedCityIdUseCase(cityId)
-            _uiState.value = _uiState.value.copy(isLoading = false)
         }
     }
 
     fun loadSavedCities() {
         viewModelScope.launch {
             val cities = getSavedCitiesUseCase()
-            _uiState.value.copy(savedCities = cities)
+            _uiState.update { it.copy(savedCities = cities) }
+//            Log.d("STATE", "Saved cities = ${uiState.value.savedCities.size}")
         }
     }
 
-    fun selectCity(cityId:Long?){
+    fun selectCity(cityId: Long?) {
         if (cityId == null) return
         viewModelScope.launch {
             saveLastSelectedCityIdUseCase(cityId)
         }
     }
 
-    fun deleteCity(cityId:Long?){
+    fun deleteCity(cityId: Long?) {
         if (cityId == null) return
 
         viewModelScope.launch {
@@ -153,12 +168,11 @@ class WeatherViewModel @Inject constructor(
             val newId = getLastInsertedIdUseCase()
 
             saveLastSelectedCityIdUseCase(newId)
-
-            _uiState.value = _uiState.value.copy(savedCities = cities)
+            _uiState.update { it.copy(savedCities = cities) }
         }
     }
 
     fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
+        _uiState.update { it.copy(error = null) }
     }
 }
