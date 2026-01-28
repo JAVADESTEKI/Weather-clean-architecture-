@@ -9,13 +9,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CitySearchViewModel @Inject constructor(
     private val searchCitiesUseCase: SearchCitiesUseCase
-    ) : ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CitySearchUiState())
     val uiState = _uiState.asStateFlow()
@@ -27,34 +28,41 @@ class CitySearchViewModel @Inject constructor(
         searchJob?.cancel()
 
         searchJob = viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(
-                isLoading = true,
-                error = null
-            )
+            _uiState.update {
+                it.copy(
+                    isLoading = true,
+                    error = null
+                )
+            }
             delay(300)
 
             val result = searchBlock()
 
             result.fold(
                 onSuccess = { cities ->
-                    _uiState.value = CitySearchUiState(
-                        isLoading = false,
-                        cities = cities
-                    )
+                    _uiState.update {
+                        CitySearchUiState(
+                            isLoading = false,
+                            cities = cities
+                        )
+                    }
                 },
                 onFailure = { throwable ->
-                    _uiState.value = CitySearchUiState(
-                        isLoading = false,
-                        cities = emptyList(),
-                        error = throwable.message ?: "Search failed"
-                    )
+                    _uiState.update {
+                        CitySearchUiState(
+                            isLoading = false,
+                            cities = emptyList(),
+                            error = throwable.message ?: "Search failed"
+                        )
+                    }
                 }
             )
         }
     }
+
     fun searchCities(query: String) {
         if (query.length < 2) {
-            _uiState.value = CitySearchUiState()
+            _uiState.update { CitySearchUiState() }
             return
         }
 
@@ -70,8 +78,7 @@ class CitySearchViewModel @Inject constructor(
     }
 
 
-
     fun clearError() {
-        _uiState.value = _uiState.value.copy(error = null)
+        _uiState.update { it.copy(error = null) }
     }
 }

@@ -119,17 +119,13 @@ class MainActivity : AppCompatActivity() {
             val country =intent.getStringExtra("country")
             val lat =intent.getDoubleExtra("lat",0.0)
             val lon =intent.getDoubleExtra("lon",0.0)
-            val selectetAt =intent.getLongExtra("selectetAt",0L)
+            val selectedAt =intent.getLongExtra("selectedAt",0L)
             val localName =intent.getStringExtra("localName")
 
-            val city= City(id,name!!,country!!,lat,lon,selectetAt,localName)
+            val city= City(id,name!!,country!!,lat,lon,selectedAt,localName)
             viewModel.saveSelectedCity(city)
-            viewModel.loadInitialWeather()
-
         }
-        else {
-            viewModel.loadInitialWeather()
-        }
+        viewModel.loadInitialWeather()
     }
 
     private fun updateForecastUI(forecast: List<ir.example1.weather.domain.model.Forecast>) {

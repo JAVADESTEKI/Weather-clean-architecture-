@@ -216,7 +216,7 @@ class CitySearchActivity : AppCompatActivity() {
                 putExtra("country", city.country)
                 putExtra("lat", city.lat)
                 putExtra("lon", city.lon)
-                putExtra("selectetAt", city.selectetAt)
+                putExtra("selectedAt", city.selectetAt)
                 putExtra("localName", city.localName)
             }
             startActivity(intent)

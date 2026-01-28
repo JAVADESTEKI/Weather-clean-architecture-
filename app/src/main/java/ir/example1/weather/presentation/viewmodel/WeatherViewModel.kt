@@ -1,33 +1,26 @@
 package ir.example1.weather.presentation.viewmodel
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.model.CityWeatherForecast
-import ir.example1.weather.domain.model.Forecast
-import ir.example1.weather.domain.model.Weather
 import ir.example1.weather.domain.usecase.DeleteCityUseCase
-import ir.example1.weather.domain.usecase.GetSavedCitiesUseCase
 import ir.example1.weather.domain.usecase.GetCurrentWeatherUseCase
 import ir.example1.weather.domain.usecase.GetForecastUseCase
 import ir.example1.weather.domain.usecase.GetLastInsertedIdUseCase
 import ir.example1.weather.domain.usecase.GetLastSelectedCityFullDataUseCase
 import ir.example1.weather.domain.usecase.GetLastSelectedCityIdUseCase
 import ir.example1.weather.domain.usecase.GetLastSelectedCityUseCase
+import ir.example1.weather.domain.usecase.GetSavedCitiesUseCase
 import ir.example1.weather.domain.usecase.SaveCityFullDataUseCase
 import ir.example1.weather.domain.usecase.SaveLastSelectedCityIdUseCase
 import ir.example1.weather.domain.usecase.UpdateCityFullDataUseCase
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -119,8 +112,7 @@ class WeatherViewModel @Inject constructor(
             val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
             val forecastResult = getForecastUseCase(city.lat, city.lon)
 
-            if (weatherResult.isFailure || forecastResult.isFailure) {
-
+            if (weatherResult.isFailure || forecastResult.isFailure){
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -128,6 +120,7 @@ class WeatherViewModel @Inject constructor(
                     )
                     return@launch
                 }
+            }
                 val cityId = saveCityFullDataUseCase(
                     city,
                     weatherResult.getOrNull()!!,
@@ -139,7 +132,6 @@ class WeatherViewModel @Inject constructor(
                         isLoading = false
                     )
                 }
-            }
         }
     }
 
