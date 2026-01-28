@@ -20,15 +20,17 @@
         android:textColor="@color/white"
         android:textSize="16dp"
         android:textStyle="bold"
+        android:layout_marginEnd="15dp"
         app:layout_constrainedHeight="true"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/gdAMainH16"
-        app:layout_constraintEnd_toStartOf="@+id/brrAMainV80"
-        app:layout_constraintStart_toStartOf="@+id/brrAMainV20"
+        app:layout_constraintEnd_toStartOf="@+id/gdAMainV80"
+        app:layout_constraintStart_toEndOf="@+id/cardView2"
         app:layout_constraintTop_toTopOf="@+id/gdAMainH07" />
 
     <androidx.cardview.widget.CardView
 
+        android:id="@+id/cardView"
         android:layout_width="30dp"
         android:layout_height="35dp"
         android:backgroundTint="#FFFFFF"
@@ -61,17 +63,21 @@
 
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView2"
         android:layout_width="33dp"
         android:layout_height="35dp"
-        android:layout_marginRight="10dp"
         android:backgroundTint="#FFFFFF"
         app:cardBackgroundColor="#FFFFFF"
         app:cardCornerRadius="16dp"
         app:cardElevation="100dp"
-        app:layout_constraintBottom_toTopOf="@+id/gdAMainH16"
+        app:layout_constraintBottom_toBottomOf="@+id/txtCity"
         app:layout_constraintEnd_toStartOf="@+id/txtCity"
-        app:layout_constraintRight_toLeftOf="@+id/txtCity"
-        app:layout_constraintTop_toTopOf="@+id/gdAMainH07">
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintStart_toEndOf="@+id/cardView"
+        app:layout_constraintStart_toStartOf="@+id/gdAMainV20"
+        app:layout_constraintTop_toTopOf="@+id/txtCity">
 
         <ImageView
             android:id="@+id/moreCity"
@@ -94,6 +100,7 @@
 
     <androidx.cardview.widget.CardView
 
+        android:id="@+id/cardView3"
         android:layout_width="30dp"
         android:layout_height="35dp"
         android:backgroundTint="#FFFFFF"
