@@ -44,6 +44,17 @@ class WeatherViewModel @Inject constructor(
     val _uiState = MutableStateFlow(WeatherUiState())
     val uiState = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            val cities = getSavedCitiesUseCase()
+            _uiState.update {
+                it.copy(
+                    savedCities = cities
+                )
+            }
+        }
+    }
+
     fun loadInitialWeather() {
         viewModelScope.launch {
             getLastSelectedCityIdUseCase()
@@ -112,7 +123,7 @@ class WeatherViewModel @Inject constructor(
             val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
             val forecastResult = getForecastUseCase(city.lat, city.lon)
 
-            if (weatherResult.isFailure || forecastResult.isFailure){
+            if (weatherResult.isFailure || forecastResult.isFailure) {
                 _uiState.update {
                     it.copy(
                         isLoading = false,
@@ -121,25 +132,20 @@ class WeatherViewModel @Inject constructor(
                     return@launch
                 }
             }
-                val cityId = saveCityFullDataUseCase(
-                    city,
-                    weatherResult.getOrNull()!!,
-                    forecastResult.getOrNull()!!
-                )
-                saveLastSelectedCityIdUseCase(cityId)
-                _uiState.update {
-                    it.copy(
-                        isLoading = false
-                    )
-                }
-        }
-    }
-
-    fun loadSavedCities() {
-        viewModelScope.launch {
+            val cityId = saveCityFullDataUseCase(
+                city,
+                weatherResult.getOrNull()!!,
+                forecastResult.getOrNull()!!
+            )
+            saveLastSelectedCityIdUseCase(cityId)
             val cities = getSavedCitiesUseCase()
-            _uiState.update { it.copy(savedCities = cities) }
-//            Log.d("STATE", "Saved cities = ${uiState.value.savedCities.size}")
+
+            _uiState.update {
+                it.copy(
+                    isLoading = false,
+                    savedCities = cities
+                )
+            }
         }
     }
 
