@@ -41,7 +41,7 @@ class WeatherViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val _uiState = MutableStateFlow(WeatherUiState())
+    private val _uiState = MutableStateFlow(WeatherUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
