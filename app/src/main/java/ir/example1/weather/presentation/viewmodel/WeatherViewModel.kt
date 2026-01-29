@@ -1,6 +1,5 @@
 package ir.example1.weather.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +16,7 @@ import ir.example1.weather.domain.usecase.GetSavedCitiesUseCase
 import ir.example1.weather.domain.usecase.SaveCityFullDataUseCase
 import ir.example1.weather.domain.usecase.SaveLastSelectedCityIdUseCase
 import ir.example1.weather.domain.usecase.UpdateCityFullDataUseCase
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
@@ -66,15 +66,16 @@ class WeatherViewModel @Inject constructor(
         }
     }
 
-
     fun refreshWeather() {
         viewModelScope.launch {
             val cityId = getLastSelectedCityIdUseCase()
                 .filterNotNull()
                 .first()
 
-            val city = getLastSelectedCityUseCase(cityId) ?: return@launch
             _uiState.update { it.copy(isLoading = true, error = null) }
+
+            val city = getLastSelectedCityUseCase(cityId) ?: return@launch
+
 
             val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
             val forecastResult = getForecastUseCase(city.lat, city.lon)
@@ -98,7 +99,6 @@ class WeatherViewModel @Inject constructor(
             val updatedCity = getLastSelectedCityFullDataUseCase(cityId)
             loadWeatherData(updatedCity)
 
-
         }
     }
 
@@ -117,8 +117,9 @@ class WeatherViewModel @Inject constructor(
     }
 
     fun saveSelectedCity(city: City) {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy(isLoading = true, error = null)
+        viewModelScope.launch() {
+            delay(200)
+            _uiState.update { it.copy(isLoading = true, error = null) }
 
             val weatherResult = getCurrentWeatherUseCase(city.lat, city.lon, city.name)
             val forecastResult = getForecastUseCase(city.lat, city.lon)
@@ -129,8 +130,9 @@ class WeatherViewModel @Inject constructor(
                         isLoading = false,
                         error = "Failed to receive weather data!"
                     )
-                    return@launch
                 }
+
+                return@launch
             }
             val cityId = saveCityFullDataUseCase(
                 city,
