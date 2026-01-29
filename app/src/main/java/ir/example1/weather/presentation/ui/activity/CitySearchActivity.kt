@@ -16,7 +16,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -182,16 +184,13 @@ class CitySearchActivity : AppCompatActivity() {
 
     private fun setupObservers() {
         lifecycleScope.launch {
-            viewModel.uiState.collectLatest { state ->
-                cityAdapter.submitList(state.cities)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { state ->
+                    cityAdapter.submitList(state.cities)
 
-                binding.progressBar2.visibility =
-                    if (state.isLoading) View.VISIBLE else View.GONE
-
-//                state.error?.let {
-//                    Toast.makeText(this@CityListActivity, it, Toast.LENGTH_SHORT).show()
-//                    viewModel.clearError()
-//                }
+                    binding.progressBar2.visibility =
+                        if (state.isLoading) View.VISIBLE else View.GONE
+                }
             }
         }
     }
