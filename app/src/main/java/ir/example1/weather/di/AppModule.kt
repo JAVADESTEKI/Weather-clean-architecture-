@@ -17,6 +17,7 @@ import ir.example1.weather.data.remote.mapper.ForecastMapper
 import ir.example1.weather.data.remote.mapper.WeatherMapper
 import ir.example1.weather.data.repository.WeatherRepositoryImpl
 import ir.example1.weather.domain.repository.WeatherRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import javax.inject.Singleton
 
 @Module
@@ -47,7 +48,8 @@ object AppModule {
         forecastMapper: ForecastMapper,
         cityMapper: CityMapper,
         cityDao: CityDao,
-        apiKey: String
+        apiKey: String,
+        @IoDispatcher ioDispatcher: CoroutineDispatcher
     ): WeatherRepository {
         return WeatherRepositoryImpl(
             apiService = apiService,
@@ -55,7 +57,8 @@ object AppModule {
             forecastMapper = forecastMapper,
             cityMapper = cityMapper,
             cityDao = cityDao,
-            apiKey = apiKey
+            apiKey = apiKey,
+            ioDispatcher = ioDispatcher
         )
     }
 }
