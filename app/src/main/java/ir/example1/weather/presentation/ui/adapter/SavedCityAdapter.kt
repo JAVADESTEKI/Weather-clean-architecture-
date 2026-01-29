@@ -5,11 +5,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ir.example1.weather.R
 import ir.example1.weather.domain.model.City
+import ir.example1.weather.presentation.ui.utils.CityDiffUtil
 
 // ✅ استفاده از ListAdapter برای DiffUtil خودکار
 class SavedCityAdapter(

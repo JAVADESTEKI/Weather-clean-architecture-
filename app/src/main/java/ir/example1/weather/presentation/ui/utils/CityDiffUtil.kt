@@ -1,4 +1,4 @@
-package ir.example1.weather.presentation.ui.adapter
+package ir.example1.weather.presentation.ui.utils
 
 import androidx.recyclerview.widget.DiffUtil
 import ir.example1.weather.domain.model.City

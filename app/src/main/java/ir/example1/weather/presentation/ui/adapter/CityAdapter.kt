@@ -3,11 +3,11 @@ package ir.example1.weather.presentation.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ir.example1.weather.databinding.CityViewholderBinding
 import ir.example1.weather.domain.model.City
+import ir.example1.weather.presentation.ui.utils.CityDiffUtil
 
 class CityAdapter(
     private val onCityClicked: (City) -> Unit
