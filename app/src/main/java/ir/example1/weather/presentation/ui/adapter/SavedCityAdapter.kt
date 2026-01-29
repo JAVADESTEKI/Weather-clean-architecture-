@@ -1,22 +1,37 @@
 package ir.example1.weather.presentation.ui.adapter
 
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ir.example1.weather.R
-import ir.example1.weather.data.local.entity.CityEntity
 import ir.example1.weather.domain.model.City
 
+// ✅ استفاده از ListAdapter برای DiffUtil خودکار
 class SavedCityAdapter(
-    private val cities: List<City>,
     private val onSelect: (Long?) -> Unit,
     private val onDelete: (Long?) -> Unit
-) : RecyclerView.Adapter<SavedCityAdapter.ViewHolder>() {
+) : ListAdapter<City, SavedCityAdapter.ViewHolder>(CityDiffUtil) {
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtName: TextView = view.findViewById(R.id.txtCityName)
         val btnDelete: ImageView = view.findViewById(R.id.btnDelete)
+
+        fun bind(city: City) {
+            txtName.text = "${city.name}, ${city.country}"
+
+            itemView.setOnClickListener {
+                onSelect(city.id)
+            }
+
+            btnDelete.setOnClickListener {
+                onDelete(city.id)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -26,18 +41,6 @@ class SavedCityAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val city = cities[position]
-
-        holder.txtName.text = "${city.name}, ${city.country}"
-
-        holder.itemView.setOnClickListener {
-            onSelect(city.id)
-        }
-
-        holder.btnDelete.setOnClickListener {
-            onDelete(city.id)
-        }
+        holder.bind(getItem(position))
     }
-
-    override fun getItemCount() = cities.size
 }

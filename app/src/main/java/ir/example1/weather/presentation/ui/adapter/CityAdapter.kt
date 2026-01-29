@@ -11,7 +11,7 @@ import ir.example1.weather.domain.model.City
 
 class CityAdapter(
     private val onCityClicked: (City) -> Unit
-) : ListAdapter<City, CityAdapter.ViewHolder>(CityDiffCallback()) {
+) : ListAdapter<City, CityAdapter.ViewHolder>(CityDiffUtil) {
 
     inner class ViewHolder(
         private val binding: CityViewholderBinding
@@ -40,17 +40,5 @@ class CityAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position))
-    }
-}
-
-class CityDiffCallback : DiffUtil.ItemCallback<City>() {
-    override fun areItemsTheSame(oldItem: City, newItem: City): Boolean {
-        return oldItem.name == newItem.name &&
-                oldItem.lat == newItem.lat &&
-                oldItem.lon == newItem.lon
-    }
-
-    override fun areContentsTheSame(oldItem: City, newItem: City): Boolean {
-        return oldItem == newItem
     }
 }
