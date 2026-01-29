@@ -10,7 +10,9 @@ import android.widget.PopupWindow
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -22,6 +24,7 @@ import ir.example1.weather.domain.model.City
 import ir.example1.weather.presentation.ui.adapter.ForecastAdapter
 import ir.example1.weather.presentation.ui.adapter.SavedCityAdapter
 import ir.example1.weather.presentation.ui.utils.WeatherIconMapper
+import ir.example1.weather.presentation.viewmodel.WeatherUiState
 import ir.example1.weather.presentation.viewmodel.WeatherViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -29,12 +32,24 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val viewModel: WeatherViewModel by viewModels()
     private val forecastAdapter = ForecastAdapter()
+    private var popupWindow: PopupWindow? = null
+
+    private val savedCityAdapter = SavedCityAdapter(
+        onSelect = { id ->
+            viewModel.selectCity(id)
+            popupWindow?.dismiss()
+        },
+        onDelete = { id ->
+            viewModel.deleteCity(id)
+        }
+    )
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,28 +85,31 @@ class MainActivity : AppCompatActivity() {
     private fun setupObservers() {
 
         lifecycleScope.launch {
-            viewModel.uiState.collectLatest { state->
-                // Loading
-                binding.progressBar.visibility =
-                    if (state.isLoading) View.VISIBLE else View.GONE
-
-                // Current weather
-                state.currentWeather?.let {
-                    updateCurrentWeatherUI(it)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.uiState.collectLatest { state ->
+                    renderState(state)
                 }
-
-                // Forecast
-                updateForecastUI(state.forecast)
-
-                state.error?.let {
-                    Toast.makeText(this@MainActivity, it, Toast.LENGTH_SHORT).show()
-                    viewModel.clearError()
-                }
-
             }
-//            viewModel.loadSavedCities()
-
         }
+    }
+
+    private fun renderState(state: WeatherUiState) {
+        // Loading
+        binding.progressBar.visibility = if (state.isLoading) View.VISIBLE else View.GONE
+
+        // Current weather
+        state.currentWeather?.let { updateCurrentWeatherUI(it) }
+
+        // Forecast
+        updateForecastUI(state.forecast)
+
+        // Error
+        state.error?.let {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            viewModel.clearError()
+        }
+
+        savedCityAdapter.submitList(state.savedCities)
     }
 
     private fun setupClickListeners() {
@@ -110,7 +128,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    // تصمیم‌گیری برای لود اولیه: اگر از CityList آمدیم فورس رفرش، در غیر این‌صورت از کشِ آخرین شهر
     private fun decideInitialLoad() {
         val hasExtras = intent.hasExtra("id")
         if (hasExtras) {
@@ -198,38 +215,19 @@ class MainActivity : AppCompatActivity() {
     }
     private fun showSavedCitiesPopup() {
         val view = layoutInflater.inflate(R.layout.popup_saved_cities, null)
-
-        val popupWindow = PopupWindow(
+        popupWindow = PopupWindow(
             view,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             ViewGroup.LayoutParams.WRAP_CONTENT,
             true
-        )
-
-        popupWindow.elevation = 20f
-        popupWindow.isOutsideTouchable = true
+        ).apply {
+            elevation = 20f
+            isOutsideTouchable = true
+        }
 
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerSavedCities)
         recycler.layoutManager = LinearLayoutManager(this)
-
-
-        lifecycleScope.launch {
-            viewModel.loadSavedCities()
-
-            viewModel.uiState.collectLatest { state ->
-                recycler.adapter = SavedCityAdapter(
-                    cities = state.savedCities.map { it },
-                    onSelect = { id ->
-                        viewModel.selectCity(id)
-                        popupWindow.dismiss()
-                    },
-                    onDelete = { id ->
-                        viewModel.deleteCity(id)
-                    }
-                )
-            }
-        }
-
-        popupWindow.showAsDropDown(binding.moreCity, -100, 10)
+        recycler.adapter = savedCityAdapter
+        popupWindow?.showAsDropDown(binding.moreCity, -100, 10)
     }
 }
