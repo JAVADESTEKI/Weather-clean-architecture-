@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -19,7 +21,11 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "WEATHER_API_KEY", "\"${project.properties["WEATHER_API_KEY"]}\"")
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"${project.properties["WEATHER_API_KEY"]}\""
+        )
 
     }
 
@@ -36,17 +42,18 @@ android {
         sourceCompatibility = JavaVersion.VERSION_19
         targetCompatibility = JavaVersion.VERSION_19
     }
-    kotlinOptions {
-        jvmTarget = "19"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_19)
+        }
     }
-    buildFeatures{
-        viewBinding=true
+    buildFeatures {
+        viewBinding = true
         buildConfig = true
     }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -67,7 +74,7 @@ dependencies {
 
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
-    ksp("androidx.room:room-compiler:2.8.3")
+    ksp(libs.androidx.room.compiler)
 
     implementation(libs.coroutines.android)
 
@@ -75,10 +82,26 @@ dependencies {
     ksp(libs.hilt.android.compiler)
     ksp(libs.hilt.compiler)
 
-    implementation("androidx.datastore:datastore-preferences:1.2.0")
+    implementation(libs.androidx.datastore.preferences)
     // Alternatively - without an Android dependency.
-    implementation("androidx.datastore:datastore-preferences-core:1.2.0")
+    implementation(libs.androidx.datastore.preferences.core)
 
-    implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation(libs.play.services.location)
+
+    // Unit Test
+    testImplementation(libs.truth)
+
+    // Mocking
+    testImplementation(libs.mockk)
+
+    // Coroutines Test
+    testImplementation(libs.kotlinx.coroutines.test)
+
+    // Flow Test
+    testImplementation(libs.turbine)
+
+    // LiveData
+    testImplementation(libs.androidx.core.testing)
+
 }
 
