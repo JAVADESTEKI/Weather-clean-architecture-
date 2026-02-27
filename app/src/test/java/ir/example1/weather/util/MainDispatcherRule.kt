@@ -1,4 +1,4 @@
-package ir.example1.weather.rule
+package ir.example1.weather.util
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,7 +13,6 @@ import org.junit.runner.Description
 class MainDispatcherRule(
     val dispatcher: TestDispatcher = StandardTestDispatcher()
 ) : TestWatcher() {
-
     override fun starting(description: Description) {
         Dispatchers.setMain(dispatcher)
     }
