@@ -3,14 +3,12 @@ package ir.example1.weather.presentation.viewmodel
 import com.google.common.truth.Truth.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import ir.example1.weather.domain.model.City
 import ir.example1.weather.domain.usecase.SearchCitiesUseCase
-import ir.example1.weather.rule.MainDispatcherRule
+import ir.example1.weather.util.MainDispatcherRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
@@ -24,7 +22,7 @@ class CitySearchViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `searchCities with short query resets state`() = runTest {
+    fun `searchCities with short query resets state`() = runTest(mainDispatcherRule.scheduler) {
 
         val searchUseCase = mockk<SearchCitiesUseCase>(relaxed = true)
         val viewModel = CitySearchViewModel(searchUseCase)
@@ -52,7 +50,7 @@ class CitySearchViewModelTest {
                 country = "IR",
                 lat = 50.0,
                 lon = 51.0,
-                selectetAt = 13454652424,
+                selectedAt = 13454652424,
                 localName = "tehran"
             )
         )
@@ -123,7 +121,7 @@ class CitySearchViewModelTest {
                 country = "IR",
                 lat = 50.0,
                 lon = 51.0,
-                selectetAt = 13454652424,
+                selectedAt = 13454652424,
                 localName = "tehran"
             )
         )
@@ -134,7 +132,7 @@ class CitySearchViewModelTest {
                 country = "IR",
                 lat = 20.0,
                 lon = 30.0,
-                selectetAt = 13454652454,
+                selectedAt = 13454652454,
                 localName = "tabriz"
             )
         )
@@ -207,7 +205,7 @@ class CitySearchViewModelTest {
                 country = "IR",
                 lat = 10.0,
                 lon = 20.0,
-                selectetAt = 0,
+                selectedAt = 0,
                 localName = "Tabriz"
             )
         )
