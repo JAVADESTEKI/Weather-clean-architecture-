@@ -102,6 +102,10 @@ dependencies {
 
     // LiveData
     testImplementation(libs.androidx.core.testing)
+    testImplementation(kotlin("test"))
+
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.mockwebserver)
 
 }
 
