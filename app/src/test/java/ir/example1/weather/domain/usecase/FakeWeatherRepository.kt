@@ -59,7 +59,7 @@ class FakeWeatherRepository : WeatherRepository {
                 country = "IR",
                 lat = 50.0,
                 lon = 51.0,
-                selectetAt = 13454652424,
+                selectedAt = 13454652424,
                 localName = "teh"
             ),
             City(id = 2,
@@ -67,7 +67,7 @@ class FakeWeatherRepository : WeatherRepository {
                 country = "IR",
                 lat = 80.0,
                 lon = 20.0,
-                selectetAt = 1123546123124,
+                selectedAt = 1123546123124,
                 localName = "shiraaz")
         )
     }

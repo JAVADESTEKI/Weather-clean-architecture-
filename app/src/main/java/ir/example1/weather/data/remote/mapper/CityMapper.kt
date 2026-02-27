@@ -15,7 +15,7 @@ class CityMapper @Inject constructor() {
                 lat = it.lat ?: 0.0,
                 lon = it.lon ?: 0.0,
                 localName = it.localNames?.fa ?: it.localNames?.en ?: it.name,
-                selectetAt = 0
+                selectedAt = 0
 
             )
         }

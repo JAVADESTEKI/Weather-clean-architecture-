@@ -24,6 +24,6 @@ fun CityEntity.toDomain(): City {
         country= country,
         lat= lat,
         lon= lon,
-        selectetAt= selectedAt
+        selectedAt= selectedAt
     )
 }

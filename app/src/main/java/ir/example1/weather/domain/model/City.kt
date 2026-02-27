@@ -7,6 +7,6 @@ data class City(
     val country: String,
     val lat: Double,
     val lon: Double,
-    val selectetAt: Long,
+    val selectedAt: Long,
     val localName: String? = null
 )

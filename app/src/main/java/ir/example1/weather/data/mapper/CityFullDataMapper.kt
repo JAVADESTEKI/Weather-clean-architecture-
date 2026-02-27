@@ -15,7 +15,7 @@ fun CityFullData.toDomain(): CityWeatherForecast {
                 country= city.country ,
                 lat= city.lat ,
                 lon= city.lon,
-                selectetAt = city.selectedAt
+                selectedAt = city.selectedAt
             ),
             weather = Weather(
                 cityName = weather.cityName ,
@@ -70,7 +70,7 @@ fun CityFullData.toDomain(): CityWeatherForecast {
                 country= city.country ,
                 lat= city.lat ,
                 lon= city.lon,
-                selectetAt = city.selectedAt
+                selectedAt = city.selectedAt
             ),
             weather=null,
             forecasts=null
