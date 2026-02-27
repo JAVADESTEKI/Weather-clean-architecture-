@@ -22,7 +22,7 @@ class CitySearchViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     @Test
-    fun `searchCities with short query resets state`() = runTest(mainDispatcherRule.scheduler) {
+    fun `searchCities with short query resets state`() = runTest {
 
         val searchUseCase = mockk<SearchCitiesUseCase>(relaxed = true)
         val viewModel = CitySearchViewModel(searchUseCase)
